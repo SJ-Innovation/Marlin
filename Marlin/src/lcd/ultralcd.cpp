@@ -187,6 +187,11 @@ uint16_t max_display_update_time = 0;
   void lcd_temperature_menu();
   void lcd_advanced_settings_menu();
 
+  #if HAS_TRINAMIC && DISABLED(SLIM_LCD_MENUS)
+    void lcd_tmc_driver_menu();
+  #endif
+
+
   #if DISABLED(SLIM_LCD_MENUS)
     void lcd_configuration_temperature_preheat_material1_settings_menu();
     void lcd_configuration_temperature_preheat_material2_settings_menu();
@@ -881,6 +886,195 @@ void lcd_quick_feedback(const bool clear_buttons) {
 
   #endif // SDSUPPORT
 
+  #if HAS_TRINAMIC && DISABLED(SLIM_LCD_MENUS)
+
+    template<typename TMC>
+    void lcd_tmc_driver_settings_menu(const TMC &st ){
+      //TODO ADD DISPLAY CODE
+    }
+
+    #if AXIS_IS_TMC(X)
+      void lcd_tmc_driver_menu_x(){
+        START_MENU();
+        MENU_BACK(MSG_BACK "   This: " MSG_X);
+        lcd_tmc_driver_settings_menu(stepperX);
+        END_MENU();
+      }
+    #endif
+
+    #if AXIS_IS_TMC(X2)
+      void lcd_tmc_driver_menu_x2(){
+        START_MENU();
+        MENU_BACK(MSG_BACK "   This: " MSG_X2);
+        lcd_tmc_driver_settings_menu(stepperX2);
+        END_MENU();
+      }
+    #endif
+
+    #if AXIS_IS_TMC(Y)
+      void lcd_tmc_driver_menu_y(){
+        START_MENU();
+        MENU_BACK(MSG_BACK "   This:" MSG_Y);
+        lcd_tmc_driver_settings_menu(stepperY);
+        END_MENU();
+      }
+    #endif
+
+    #if AXIS_IS_TMC(Y2)
+      void lcd_tmc_driver_menu_y2(){
+        START_MENU();
+        MENU_BACK(MSG_BACK "   This: " MSG_Y2);
+        lcd_tmc_driver_settings_menu(stepperY2);
+        END_MENU();
+
+      }
+    #endif
+
+    #if AXIS_IS_TMC(Z)
+      void lcd_tmc_driver_menu_z(){
+        START_MENU();
+        MENU_BACK(MSG_BACK "   This: " MSG_Z);
+        lcd_tmc_driver_settings_menu(stepperZ);
+        END_MENU();
+
+      }
+    #endif
+
+    #if AXIS_IS_TMC(Z2)
+      void lcd_tmc_driver_menu_z2(){
+        START_MENU();
+        MENU_BACK(MSG_BACK "   This:  " MSG_Z2);
+        lcd_tmc_driver_settings_menu(stepperZ2);
+        END_MENU();
+      }
+    #endif
+
+    #if EXTRUDERS == 1
+      #if AXIS_IS_TMC(E0)
+        void lcd_tmc_driver_menu_e(){
+          START_MENU();
+          MENU_BACK(MSG_BACK "   This: " MSG_E);
+          lcd_tmc_driver_settings_menu(stepperE0);
+          END_MENU();
+        }
+      #endif
+
+    #else
+      #if AXIS_IS_TMC(E0)
+        void lcd_tmc_driver_menu_e0(){
+          START_MENU();
+          MENU_BACK(MSG_BACK "   This: " MSG_E1);
+          lcd_tmc_driver_settings_menu(stepperE0);
+          END_MENU();
+        }
+      #endif
+
+      #if AXIS_IS_TMC(E1)
+        void lcd_tmc_driver_menu_e1(){
+          START_MENU();
+          MENU_BACK(MSG_BACK "   This: " MSG_E2);
+          lcd_tmc_driver_settings_menu(stepperE1);
+          END_MENU();
+        }
+      #endif
+
+      #if AXIS_IS_TMC(E2)
+        void lcd_tmc_driver_menu_e2(){
+          START_MENU();
+          MENU_BACK(MSG_BACK "   This: " MSG_E3);
+          lcd_tmc_driver_settings_menu(stepperE2);
+          END_MENU();
+        }
+      #endif
+
+      #if AXIS_IS_TMC(E3)
+        void lcd_tmc_driver_menu_e3(){
+          START_MENU();
+          MENU_BACK(MSG_BACK "   This: " MSG_E3);
+          lcd_tmc_driver_settings_menu(stepperE3);
+          END_MENU();
+        }
+      #endif
+
+      #if AXIS_IS_TMC(E4)
+        void lcd_tmc_driver_menu_e4(){
+          START_MENU();
+          MENU_BACK(MSG_BACK "   This: " MSG_E4);
+          lcd_tmc_driver_settings_menu(stepperE4);
+          END_MENU();
+        }
+      #endif
+    #endif
+
+
+
+
+void lcd_tmc_driver_menu(){
+      START_MENU();
+      MENU_BACK(MSG_BACK);
+      #if AXIS_IS_TMC(X)
+        MENU_ITEM(submenu, MSG_X " " MSG_AXIS, lcd_tmc_driver_menu_x);
+      #endif
+      #if AXIS_IS_TMC(X2)
+        MENU_ITEM(submenu, MSG_X2 " " MSG_AXIS, lcd_tmc_driver_menu_x2);
+      #endif
+      #if AXIS_IS_TMC(Y)
+        MENU_ITEM(submenu, MSG_Y " " MSG_AXIS, lcd_tmc_driver_menu_y);
+      #endif
+      #if AXIS_IS_TMC(Y2)
+        MENU_ITEM(submenu, MSG_Y2 " " MSG_AXIS, lcd_tmc_driver_menu_y2);
+      #endif
+      #if AXIS_IS_TMC(Z)
+        MENU_ITEM(submenu, MSG_Z " " MSG_AXIS, lcd_tmc_driver_menu_z);
+      #endif
+      #if AXIS_IS_TMC(Z2)
+        MENU_ITEM(submenu, MSG_Z2 " " MSG_AXIS, lcd_tmc_driver_menu_z2);
+      #endif
+
+    #if EXTRUDERS == 1
+      #if AXIS_IS_TMC(E0)
+        MENU_ITEM(submenu, MSG_E, lcd_tmc_driver_menu_e);
+      #endif
+    #else
+      #if AXIS_IS_TMC(E0)
+        MENU_ITEM(submenu, MSG_E1, lcd_tmc_driver_menu_e0);
+      #endif
+      #if AXIS_IS_TMC(E1)
+        MENU_ITEM(submenu, MSG_E2, lcd_tmc_driver_menu_e1);
+      #endif
+      #if AXIS_IS_TMC(E2)
+        MENU_ITEM(submenu, MSG_E3, lcd_tmc_driver_menu_e2);
+      #endif
+      #if AXIS_IS_TMC(E3)
+        MENU_ITEM(submenu, MSG_E4, lcd_tmc_driver_menu_e3);
+      #endif
+      #if AXIS_IS_TMC(E3)
+        MENU_ITEM(submenu, MSG_E5, lcd_tmc_driver_menu_e4);
+      #endif
+      #endif
+//  #define TMC_SAY_CURRENT(Q) tmc_get_current(stepper##Q, TMC_##Q)
+//  #define TMC_SET_CURRENT(Q) tmc_set_current(stepper##Q, value)
+//        TMC_SET_CURRENT(X);
+//stepperX.setCurrent()
+      
+
+
+
+      END_MENU();
+    }
+  #endif
+
+
+
+
+
+
+
+
+
+
+
+
   #if ENABLED(POWER_LOSS_RECOVERY)
 
     static void lcd_power_loss_recovery_resume() {
@@ -1181,7 +1375,7 @@ void lcd_quick_feedback(const bool clear_buttons) {
       MENU_ITEM(submenu, MSG_TEMPERATURE, lcd_temperature_menu);
       MENU_ITEM(submenu, MSG_CONFIGURATION, lcd_configuration_menu);
     }
-
+    MENU_ITEM(submenu, MSG_TMC_DRIVER, lcd_tmc_driver_menu); // Move for final PR, just for debug
     #if ENABLED(ADVANCED_PAUSE_FEATURE)
       #if E_STEPPERS == 1 && DISABLED(FILAMENT_LOAD_UNLOAD_GCODES)
         if (thermalManager.targetHotEnoughToExtrude(active_extruder))

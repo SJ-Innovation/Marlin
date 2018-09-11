@@ -270,8 +270,11 @@
 
 // Never translate these strings
 #define MSG_X "X"
+#define MSG_X2 "X2"
 #define MSG_Y "Y"
+#define MSG_Y2 "Y2"
 #define MSG_Z "Z"
+#define MSG_Z2 "Z2"
 #define MSG_E "E"
 #if IS_KINEMATIC
   #define MSG_A "A"
@@ -282,6 +285,7 @@
   #define MSG_B "Y"
   #define MSG_C "Z"
 #endif
+#define MSG_AXIS "Axis"
 #define MSG_H1 "1"
 #define MSG_H2 "2"
 #define MSG_H3 "3"

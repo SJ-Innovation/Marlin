@@ -67,6 +67,9 @@
 #ifndef MSG_CONFIGURATION
   #define MSG_CONFIGURATION                   _UxGT("Configuration")
 #endif
+#ifndef MSG_TMC_DRIVER
+  #define MSG_TMC_DRIVER                      _UxGT("TMC Drivers")
+#endif
 #ifndef MSG_AUTOSTART
   #define MSG_AUTOSTART                       _UxGT("Autostart")
 #endif
