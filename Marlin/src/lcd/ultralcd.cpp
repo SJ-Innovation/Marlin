@@ -134,6 +134,7 @@ uint16_t max_display_update_time = 0;
     } \
     typedef void _name##_void
   DEFINE_LCD_IMPLEMENTATION_DRAWMENU_SETTING_EDIT_TYPE(int16_t, int3, itostr3);
+  DEFINE_LCD_IMPLEMENTATION_DRAWMENU_SETTING_EDIT_TYPE(uint16_t, int5, uitostr5);
   DEFINE_LCD_IMPLEMENTATION_DRAWMENU_SETTING_EDIT_TYPE(uint8_t, int8, i8tostr3);
   DEFINE_LCD_IMPLEMENTATION_DRAWMENU_SETTING_EDIT_TYPE(float, float3, ftostr3);
   DEFINE_LCD_IMPLEMENTATION_DRAWMENU_SETTING_EDIT_TYPE(float, float52, ftostr52);
@@ -231,7 +232,9 @@ uint16_t max_display_update_time = 0;
 
   #if ENABLED(FWRETRACT)
     #include "../feature/fwretract.h"
-    void lcd_config_retract_menu();
+
+
+void lcd_config_retract_menu();
   #endif
 
   #if ENABLED(DELTA_CALIBRATION_MENU) || ENABLED(DELTA_AUTO_CALIBRATION)
@@ -267,6 +270,7 @@ uint16_t max_display_update_time = 0;
     typedef void _name##_void
 
   DECLARE_MENU_EDIT_TYPE(int16_t, int3);
+  DECLARE_MENU_EDIT_TYPE(uint16_t, int5);
   DECLARE_MENU_EDIT_TYPE(uint8_t, int8);
   DECLARE_MENU_EDIT_TYPE(float, float3);
   DECLARE_MENU_EDIT_TYPE(float, float52);
@@ -887,125 +891,100 @@ void lcd_quick_feedback(const bool clear_buttons) {
   #endif // SDSUPPORT
 
   #if HAS_TRINAMIC && DISABLED(SLIM_LCD_MENUS)
+    #include "../feature/tmc_util.h"
 
-    template<typename TMC>
-    void lcd_tmc_driver_settings_menu(const TMC &st ){
-      //TODO ADD DISPLAY CODE
+    void _lcd_tmc_update_drivers(){
+
     }
 
+    #define MSG_TMC_X MSG_X
+    #define MSG_TMC_X2 MSG_X2
+    #define MSG_TMC_Y MSG_Y
+    #define MSG_TMC_Y2 MSG_Y2
+    #define MSG_TMC_Z MSG_Z
+    #define MSG_TMC_Z2 MSG_Z2
+    #define MSG_TMC_E MSG_E
+
+    #define MSG_TMC_E0 MSG_E1
+    #define MSG_TMC_E1 MSG_E2
+    #define MSG_TMC_E2 MSG_E3
+    #define MSG_TMC_E3 MSG_E4
+    #define MSG_TMC_E4 MSG_E5
+
+    #define MSG_TMC_MAX_CURRENT _UxGT("Max Current (mA): ")
+    #define MSG_TMC_RMS_CURRENT _UxGT("RMS Current (mA): ")
+
+    #define lcd_tmc_define_variables(stepperObj) \
+      uint16_t set_rms_current_##stepperObj, temp_rms_current_##stepperObj, set_max_current_##stepperObj, temp_max_current_##stepperObj;
+
+    #define lcd_tmc_populate_menu(stepperObj)  \
+      set_rms_current_##stepperObj = temp_rms_current_##stepperObj = stepperObj.rms_current(); \
+      set_max_current_##stepperObj = temp_max_current_##stepperObj = set_rms_current_##stepperObj * 1.41;
+
+    #define lcd_tmc_drive_all_menu(stepperObj)  \
+      MENU_MULTIPLIER_ITEM_EDIT_CALLBACK(int5,MSG_TMC_RMS_CURRENT, &temp_rms_current_##stepperObj, 0, 2000, _lcd_tmc_update_drivers);\
+      MENU_MULTIPLIER_ITEM_EDIT_CALLBACK(int5,MSG_TMC_MAX_CURRENT, &temp_max_current_##stepperObj, 0, 2000, _lcd_tmc_update_drivers);
+
+    #define DEFINE_DRIVER_MENU(axis) \
+        lcd_tmc_define_variables(stepper##axis); \
+        void lcd_tmc_driver_menu_##axis(){ \
+          START_MENU(); \
+          MENU_BACK(MSG_BACK "   This: " MSG_TMC_##axis); \
+          lcd_tmc_populate_menu(stepper##axis); \
+          lcd_tmc_drive_all_menu(stepper##axis); \
+          END_MENU();\
+        }
+
     #if AXIS_IS_TMC(X)
-      void lcd_tmc_driver_menu_x(){
-        START_MENU();
-        MENU_BACK(MSG_BACK "   This: " MSG_X);
-        lcd_tmc_driver_settings_menu(stepperX);
-        END_MENU();
-      }
+      DEFINE_DRIVER_MENU(X);
     #endif
 
     #if AXIS_IS_TMC(X2)
-      void lcd_tmc_driver_menu_x2(){
-        START_MENU();
-        MENU_BACK(MSG_BACK "   This: " MSG_X2);
-        lcd_tmc_driver_settings_menu(stepperX2);
-        END_MENU();
-      }
+      DEFINE_DRIVER_MENU(X2);
     #endif
 
     #if AXIS_IS_TMC(Y)
-      void lcd_tmc_driver_menu_y(){
-        START_MENU();
-        MENU_BACK(MSG_BACK "   This:" MSG_Y);
-        lcd_tmc_driver_settings_menu(stepperY);
-        END_MENU();
-      }
+      DEFINE_DRIVER_MENU(Y);
     #endif
 
     #if AXIS_IS_TMC(Y2)
-      void lcd_tmc_driver_menu_y2(){
-        START_MENU();
-        MENU_BACK(MSG_BACK "   This: " MSG_Y2);
-        lcd_tmc_driver_settings_menu(stepperY2);
-        END_MENU();
-
-      }
+      DEFINE_DRIVER_MENU(Y2);
     #endif
 
     #if AXIS_IS_TMC(Z)
-      void lcd_tmc_driver_menu_z(){
-        START_MENU();
-        MENU_BACK(MSG_BACK "   This: " MSG_Z);
-        lcd_tmc_driver_settings_menu(stepperZ);
-        END_MENU();
-
-      }
+      DEFINE_DRIVER_MENU(Z);
     #endif
 
     #if AXIS_IS_TMC(Z2)
-      void lcd_tmc_driver_menu_z2(){
-        START_MENU();
-        MENU_BACK(MSG_BACK "   This:  " MSG_Z2);
-        lcd_tmc_driver_settings_menu(stepperZ2);
-        END_MENU();
-      }
+      DEFINE_DRIVER_MENU(Z2);
     #endif
 
     #if EXTRUDERS == 1
       #if AXIS_IS_TMC(E0)
-        void lcd_tmc_driver_menu_e(){
-          START_MENU();
-          MENU_BACK(MSG_BACK "   This: " MSG_E);
-          lcd_tmc_driver_settings_menu(stepperE0);
-          END_MENU();
-        }
+        DEFINE_DRIVER_MENU(E);
       #endif
 
     #else
       #if AXIS_IS_TMC(E0)
-        void lcd_tmc_driver_menu_e0(){
-          START_MENU();
-          MENU_BACK(MSG_BACK "   This: " MSG_E1);
-          lcd_tmc_driver_settings_menu(stepperE0);
-          END_MENU();
-        }
+        DEFINE_DRIVER_MENU(E0);
       #endif
 
       #if AXIS_IS_TMC(E1)
-        void lcd_tmc_driver_menu_e1(){
-          START_MENU();
-          MENU_BACK(MSG_BACK "   This: " MSG_E2);
-          lcd_tmc_driver_settings_menu(stepperE1);
-          END_MENU();
-        }
+        DEFINE_DRIVER_MENU(E1);
       #endif
 
       #if AXIS_IS_TMC(E2)
-        void lcd_tmc_driver_menu_e2(){
-          START_MENU();
-          MENU_BACK(MSG_BACK "   This: " MSG_E3);
-          lcd_tmc_driver_settings_menu(stepperE2);
-          END_MENU();
-        }
+        DEFINE_DRIVER_MENU(E2);
       #endif
 
       #if AXIS_IS_TMC(E3)
-        void lcd_tmc_driver_menu_e3(){
-          START_MENU();
-          MENU_BACK(MSG_BACK "   This: " MSG_E3);
-          lcd_tmc_driver_settings_menu(stepperE3);
-          END_MENU();
-        }
+        DEFINE_DRIVER_MENU(E3);
       #endif
 
       #if AXIS_IS_TMC(E4)
-        void lcd_tmc_driver_menu_e4(){
-          START_MENU();
-          MENU_BACK(MSG_BACK "   This: " MSG_E4);
-          lcd_tmc_driver_settings_menu(stepperE4);
-          END_MENU();
-        }
+        DEFINE_DRIVER_MENU(E4);
       #endif
     #endif
-
 
 
 
@@ -1013,43 +992,43 @@ void lcd_tmc_driver_menu(){
       START_MENU();
       MENU_BACK(MSG_BACK);
       #if AXIS_IS_TMC(X)
-        MENU_ITEM(submenu, MSG_X " " MSG_AXIS, lcd_tmc_driver_menu_x);
+        MENU_ITEM(submenu, MSG_X " " MSG_AXIS, lcd_tmc_driver_menu_X);
       #endif
       #if AXIS_IS_TMC(X2)
         MENU_ITEM(submenu, MSG_X2 " " MSG_AXIS, lcd_tmc_driver_menu_x2);
       #endif
       #if AXIS_IS_TMC(Y)
-        MENU_ITEM(submenu, MSG_Y " " MSG_AXIS, lcd_tmc_driver_menu_y);
+        MENU_ITEM(submenu, MSG_Y " " MSG_AXIS, lcd_tmc_driver_menu_Y);
       #endif
       #if AXIS_IS_TMC(Y2)
         MENU_ITEM(submenu, MSG_Y2 " " MSG_AXIS, lcd_tmc_driver_menu_y2);
       #endif
       #if AXIS_IS_TMC(Z)
-        MENU_ITEM(submenu, MSG_Z " " MSG_AXIS, lcd_tmc_driver_menu_z);
+        MENU_ITEM(submenu, MSG_Z " " MSG_AXIS, lcd_tmc_driver_menu_Z);
       #endif
       #if AXIS_IS_TMC(Z2)
-        MENU_ITEM(submenu, MSG_Z2 " " MSG_AXIS, lcd_tmc_driver_menu_z2);
+        MENU_ITEM(submenu, MSG_Z2 " " MSG_AXIS, lcd_tmc_driver_menu_Z2);
       #endif
 
     #if EXTRUDERS == 1
       #if AXIS_IS_TMC(E0)
-        MENU_ITEM(submenu, MSG_E, lcd_tmc_driver_menu_e);
+        MENU_ITEM(submenu, MSG_E, lcd_tmc_driver_menu_E);
       #endif
     #else
       #if AXIS_IS_TMC(E0)
-        MENU_ITEM(submenu, MSG_E1, lcd_tmc_driver_menu_e0);
+        MENU_ITEM(submenu, MSG_TMC_E0, lcd_tmc_driver_menu_E0);
       #endif
       #if AXIS_IS_TMC(E1)
-        MENU_ITEM(submenu, MSG_E2, lcd_tmc_driver_menu_e1);
+        MENU_ITEM(submenu, MSG_TMC_E1, lcd_tmc_driver_menu_E1);
       #endif
       #if AXIS_IS_TMC(E2)
-        MENU_ITEM(submenu, MSG_E3, lcd_tmc_driver_menu_e2);
+        MENU_ITEM(submenu, MSG_TMC_E2, lcd_tmc_driver_menu_E2);
       #endif
       #if AXIS_IS_TMC(E3)
-        MENU_ITEM(submenu, MSG_E4, lcd_tmc_driver_menu_e3);
+        MENU_ITEM(submenu, MSG_TMC_E3, lcd_tmc_driver_menu_E3);
       #endif
       #if AXIS_IS_TMC(E3)
-        MENU_ITEM(submenu, MSG_E5, lcd_tmc_driver_menu_e4);
+        MENU_ITEM(submenu, MSG_TMC_E4, lcd_tmc_driver_menu_E4);
       #endif
       #endif
 //  #define TMC_SAY_CURRENT(Q) tmc_get_current(stepper##Q, TMC_##Q)
@@ -5117,6 +5096,7 @@ void lcd_tmc_driver_menu(){
     typedef void _name##_void
 
   DEFINE_MENU_EDIT_TYPE(int16_t, int3, itostr3, 1);
+  DEFINE_MENU_EDIT_TYPE(uint16_t, int5, uitostr5, 1);
   DEFINE_MENU_EDIT_TYPE(uint8_t, int8, i8tostr3, 1);
   DEFINE_MENU_EDIT_TYPE(float, float3, ftostr3, 1);
   DEFINE_MENU_EDIT_TYPE(float, float52, ftostr52, 100);

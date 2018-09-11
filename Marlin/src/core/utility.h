@@ -53,6 +53,9 @@ void safe_delay(millis_t ms);
   // Convert signed int to rj string with 123 or -12 format
   char* itostr3(const int x);
 
+  // Convert unsigned int to rj string with 12345 format
+  char* uitostr5(const int x);
+
   // Convert unsigned int to lj string with 123 format
   char* itostr3left(const int xx);
 

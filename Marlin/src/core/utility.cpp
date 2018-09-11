@@ -73,6 +73,16 @@ void safe_delay(millis_t ms) {
     return &conv[4];
   }
 
+  // Convert unsigned int to rj string with 12345 format
+  char* uitostr5(int i) {
+    conv[2] = RJDIGIT(i, 10000);
+    conv[3] = RJDIGIT(i, 1000);
+    conv[4] = RJDIGIT(i, 100);
+    conv[5] = RJDIGIT(i, 10);
+    conv[6] = DIGIMOD(i, 1);
+    return &conv[2];
+  }
+
   // Convert unsigned int to lj string with 123 format
   char* itostr3left(const int i) {
     char *str = &conv[6];
