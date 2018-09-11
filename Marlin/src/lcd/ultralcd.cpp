@@ -893,9 +893,7 @@ void lcd_quick_feedback(const bool clear_buttons) {
   #if HAS_TRINAMIC && DISABLED(SLIM_LCD_MENUS)
     #include "../feature/tmc_util.h"
 
-    void _lcd_tmc_update_drivers(){
 
-    }
 
     #define MSG_TMC_X MSG_X
     #define MSG_TMC_X2 MSG_X2
@@ -918,15 +916,23 @@ void lcd_quick_feedback(const bool clear_buttons) {
       uint16_t set_rms_current_##stepperObj, temp_rms_current_##stepperObj, set_max_current_##stepperObj, temp_max_current_##stepperObj;
 
     #define lcd_tmc_populate_menu(stepperObj)  \
-      set_rms_current_##stepperObj = temp_rms_current_##stepperObj = stepperObj.rms_current(); \
-      set_max_current_##stepperObj = temp_max_current_##stepperObj = set_rms_current_##stepperObj * 1.41;
+      set_rms_current_##stepperObj = stepperObj.rms_current(); \
+      set_max_current_##stepperObj = set_rms_current_##stepperObj * 1.41;
 
     #define lcd_tmc_drive_all_menu(stepperObj)  \
-      MENU_MULTIPLIER_ITEM_EDIT_CALLBACK(int5,MSG_TMC_RMS_CURRENT, &temp_rms_current_##stepperObj, 0, 2000, _lcd_tmc_update_drivers);\
-      MENU_MULTIPLIER_ITEM_EDIT_CALLBACK(int5,MSG_TMC_MAX_CURRENT, &temp_max_current_##stepperObj, 0, 2000, _lcd_tmc_update_drivers);
+      MENU_MULTIPLIER_ITEM_EDIT_CALLBACK(int5,MSG_TMC_RMS_CURRENT, &set_rms_current_##stepperObj, 0, 2000, _lcd_tmc_update_drivers_Irms_##stepperObj);\
+      MENU_MULTIPLIER_ITEM_EDIT_CALLBACK(int5,MSG_TMC_MAX_CURRENT, &set_max_current_##stepperObj, 0, 2000, _lcd_tmc_update_drivers_Imax_##stepperObj);
 
     #define DEFINE_DRIVER_MENU(axis) \
         lcd_tmc_define_variables(stepper##axis); \
+        void _lcd_tmc_update_drivers_Irms_stepper##axis(){\
+          tmc_set_current(stepper##axis, set_rms_current_stepper##axis);\
+          set_max_current_stepper##axis = set_rms_current_stepper##axis * 1.41;\
+        }\
+        void _lcd_tmc_update_drivers_Imax_stepper##axis(){\
+          tmc_set_current(stepper##axis, set_max_current_stepper##axis / 1.41);\
+          set_rms_current_stepper##axis = set_max_current_stepper##axis / 1.41;\
+        }\
         void lcd_tmc_driver_menu_##axis(){ \
           START_MENU(); \
           MENU_BACK(MSG_BACK "   This: " MSG_TMC_##axis); \
@@ -934,6 +940,7 @@ void lcd_quick_feedback(const bool clear_buttons) {
           lcd_tmc_drive_all_menu(stepper##axis); \
           END_MENU();\
         }
+
 
     #if AXIS_IS_TMC(X)
       DEFINE_DRIVER_MENU(X);
