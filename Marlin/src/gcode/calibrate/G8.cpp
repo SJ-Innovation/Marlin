@@ -32,43 +32,43 @@
 
 void GcodeSuite::G8() {
 #if HAS_LEVELING
-    const bool was_enabled = planner.leveling_active;
-    set_bed_leveling_enabled(false);
+  const bool was_enabled = planner.leveling_active;
+  set_bed_leveling_enabled(false);
 #endif
 
-    uint8_t OldActiveExtruder = active_extruder;
-    float RelativeZOffsets[EXTRUDERS];
+  uint8_t OldActiveExtruder = active_extruder;
+  float RelativeZOffsets[EXTRUDERS];
 
-    HOTEND_LOOP() { // Blank out the current z offsets
-        hotend_offset[Z_AXIS][e] = 0;
-        RelativeZOffsets[e] = 0;
-    };
+  HOTEND_LOOP() { // Blank out the current z offsets
+    hotend_offset[Z_AXIS][e] = 0;
+    RelativeZOffsets[e] = 0;
+  };
 
-    HOTEND_LOOP() { // Probe all of the extruders
-        if (active_extruder != e) {
-            tool_change(e, 0, false);
-        }
-
-        setup_for_endstop_or_probe_move();
-        RelativeZOffsets[e] = probe_pt(Z_SAFE_HOMING_X_POINT, Z_SAFE_HOMING_Y_POINT, PROBE_PT_NONE, 0);
-
-        clean_up_after_endstop_or_probe_move();
-        if (isnan(RelativeZOffsets[e])) { // Probing Failure
-            break;
-        }
+  HOTEND_LOOP() { // Probe all of the extruders
+    if (active_extruder != e) {
+      tool_change(e, 0, false);
     }
 
-    tool_change(OldActiveExtruder, 0, false);
+    setup_for_endstop_or_probe_move();
+    RelativeZOffsets[e] = probe_pt(Z_SAFE_HOMING_X_POINT, Z_SAFE_HOMING_Y_POINT, PROBE_PT_NONE, 0);
 
-    SERIAL_ECHOPGM("New Offsets: ");
-    HOTEND_LOOP(){
-        hotend_offset[Z_AXIS][e] = RelativeZOffsets[e] - RelativeZOffsets[0]; // First extruder ends up 0, others end up relative to first
-        SERIAL_ECHO(hotend_offset[Z_AXIS][e]);
-        SERIAL_ECHOPGM(" ");
+    clean_up_after_endstop_or_probe_move();
+    if (isnan(RelativeZOffsets[e])) { // Probing Failure
+      break;
     }
-    SERIAL_ECHOLNPGM("");
+  }
+
+  tool_change(OldActiveExtruder, 0, false);
+
+  SERIAL_ECHOPGM("New Offsets: ");
+  HOTEND_LOOP() {
+    hotend_offset[Z_AXIS][e] = RelativeZOffsets[e] - RelativeZOffsets[0]; // First extruder ends up 0, others end up relative to first
+    SERIAL_ECHO(hotend_offset[Z_AXIS][e]);
+    SERIAL_ECHOPGM(" ");
+  }
+  SERIAL_ECHOLNPGM("");
 #if HAS_LEVELING
-    set_bed_leveling_enabled(was_enabled);
+  set_bed_leveling_enabled(was_enabled);
 #endif
 }
 

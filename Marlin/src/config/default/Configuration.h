@@ -221,6 +221,8 @@
   #define SWITCHING_TOOLHEAD_X_POS        { 215, 0 }  // (mm) X positions for parking the extruders
 #endif
 
+//#define AUTO_NOZZLE_Z_OFFSET_CAL // In systems using a nozzle as a probe, determine the Z offsets automatically.
+
 /**
  * "Mixing Extruder"
  *   - Adds G-codes M163 and M164 to set and "commit" the current mix factors.
