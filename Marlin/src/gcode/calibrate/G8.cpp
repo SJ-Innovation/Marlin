@@ -24,23 +24,24 @@
 #include "../../module/motion.h"
 #include "../../module/tool_change.h"
 #include "../../module/probe.h"
+#include "../../module/planner.h"
+#include "../../feature/bedlevel/bedlevel.h"
 #include "../gcode.h"
 
 #if ENABLED(AUTO_NOZZLE_Z_OFFSET_CAL)
 
 void GcodeSuite::G8() {
-
 #if HAS_LEVELING
     const bool was_enabled = planner.leveling_active;
     set_bed_leveling_enabled(false);
 #endif
 
     uint8_t OldActiveExtruder = active_extruder;
-    float   RelativeZOffsets[EXTRUDERS];
+    float RelativeZOffsets[EXTRUDERS];
 
     HOTEND_LOOP() { // Blank out the current z offsets
-        hotend_offset[Z_AXIS][e] = 0
-        RelativeZOffsets[e]      = 0;
+        hotend_offset[Z_AXIS][e] = 0;
+        RelativeZOffsets[e] = 0;
     };
 
     HOTEND_LOOP() { // Probe all of the extruders
