@@ -194,6 +194,10 @@ void GcodeSuite::process_parsed_command(
         case 5: G5(); break;                                      // G5: Cubic B_spline
       #endif
 
+      #if ENABLED(AUTO_NOZZLE_Z_OFFSET_CAL)
+        case 8: G8(); break;                                      // G8: Auto Z Calibration
+      #endif
+
       #if ENABLED(FWRETRACT)
         case 10: G10(); break;                                    // G10: Retract / Swap Retract
         case 11: G11(); break;                                    // G11: Recover / Swap Recover

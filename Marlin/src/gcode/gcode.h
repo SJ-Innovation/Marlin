@@ -350,6 +350,10 @@ private:
     static void G5();
   #endif
 
+  #if ENABLED(AUTO_NOZZLE_Z_OFFSET_CAL)
+    static void G8();
+  #endif
+
   #if ENABLED(FWRETRACT)
     static void G10();
     static void G11();
