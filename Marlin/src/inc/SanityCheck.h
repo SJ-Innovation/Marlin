@@ -702,6 +702,10 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
     #error "SWITCHING_NOZZLE requires exactly 2 EXTRUDERS."
   #elif NUM_SERVOS < 1
     #error "SWITCHING_NOZZLE requires NUM_SERVOS >= 1."
+  #endif
+
+  #ifndef SWITCHING_NOZZLE_SERVO_NR
+    #error "SWITCHING_NOZZLE requires SWITCHING_NOZZLE_SERVO_NR."
   #elif SWITCHING_NOZZLE_SERVO_NR == 0 && !PIN_EXISTS(SERVO0)
     #error "SERVO0_PIN must be defined for your SWITCHING_NOZZLE."
   #elif SWITCHING_NOZZLE_SERVO_NR == 1 && !PIN_EXISTS(SERVO1)
@@ -710,6 +714,20 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
     #error "SERVO2_PIN must be defined for your SWITCHING_NOZZLE."
   #elif SWITCHING_NOZZLE_SERVO_NR == 3 && !PIN_EXISTS(SERVO3)
     #error "SERVO3_PIN must be defined for your SWITCHING_NOZZLE."
+  #endif
+
+  #ifdef SWITCHING_NOZZLE_E1_SERVO_NR
+    #if SWITCHING_NOZZLE_E1_SERVO_NR == SWITCHING_NOZZLE_SERVO_NR
+      #error "SWITCHING_NOZZLE_E1_SERVO_NR must be different from SWITCHING_NOZZLE_SERVO_NR."
+    #elif SWITCHING_NOZZLE_E1_SERVO_NR == 0 && !PIN_EXISTS(SERVO0)
+      #error "SERVO0_PIN must be defined for your SWITCHING_NOZZLE."
+    #elif SWITCHING_NOZZLE_E1_SERVO_NR == 1 && !PIN_EXISTS(SERVO1)
+      #error "SERVO1_PIN must be defined for your SWITCHING_NOZZLE."
+    #elif SWITCHING_NOZZLE_E1_SERVO_NR == 2 && !PIN_EXISTS(SERVO2)
+      #error "SERVO2_PIN must be defined for your SWITCHING_NOZZLE."
+    #elif SWITCHING_NOZZLE_E1_SERVO_NR == 3 && !PIN_EXISTS(SERVO3)
+      #error "SERVO3_PIN must be defined for your SWITCHING_NOZZLE."
+    #endif
   #endif
 #endif
 
@@ -1298,7 +1316,7 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
   #error "TEMP_0_PIN not defined for this board."
 #elif ((defined(__AVR_ATmega644P__) || defined(__AVR_ATmega1284P__)) && (!PIN_EXISTS(E0_STEP) || !PIN_EXISTS(E0_DIR)))
   #error "E0_STEP_PIN or E0_DIR_PIN not defined for this board."
-#elif ( !(defined(__AVR_ATmega644P__) || defined(__AVR_ATmega1284P__)) && (!PIN_EXISTS(E0_STEP) || !PIN_EXISTS(E0_DIR) || !PIN_EXISTS(E0_ENABLE)))
+#elif ( !(defined(__AVR_ATmega644P__) || defined(__AVR_ATmega1284P__)) && (!PIN_EXISTS(E0_STEP) || !PIN_EXISTS(E0_DIR) || !HAS_E0_ENABLE))
   #error "E0_STEP_PIN, E0_DIR_PIN, or E0_ENABLE_PIN not defined for this board."
 #elif TEMP_SENSOR_0 == 0
   #error "TEMP_SENSOR_0 is required."
@@ -1427,27 +1445,27 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
  */
 #if DISABLED(MK2_MULTIPLEXER) // MK2_MULTIPLEXER uses E0 stepper only
   #if E_STEPPERS
-    #if !(PIN_EXISTS(E0_STEP) && PIN_EXISTS(E0_DIR) && PIN_EXISTS(E0_ENABLE))
+    #if !(PIN_EXISTS(E0_STEP) && PIN_EXISTS(E0_DIR) && HAS_E0_ENABLE)
       #error "E0_STEP_PIN, E0_DIR_PIN, or E0_ENABLE_PIN not defined for this board."
     #endif
     #if E_STEPPERS > 1
-      #if !(PIN_EXISTS(E1_STEP) && PIN_EXISTS(E1_DIR) && PIN_EXISTS(E1_ENABLE))
+      #if !(PIN_EXISTS(E1_STEP) && PIN_EXISTS(E1_DIR) && HAS_E1_ENABLE)
         #error "E1_STEP_PIN, E1_DIR_PIN, or E1_ENABLE_PIN not defined for this board."
       #endif
       #if E_STEPPERS > 2
-        #if !(PIN_EXISTS(E2_STEP) && PIN_EXISTS(E2_DIR) && PIN_EXISTS(E2_ENABLE))
+        #if !(PIN_EXISTS(E2_STEP) && PIN_EXISTS(E2_DIR) && HAS_E2_ENABLE)
           #error "E2_STEP_PIN, E2_DIR_PIN, or E2_ENABLE_PIN not defined for this board."
         #endif
         #if E_STEPPERS > 3
-          #if !(PIN_EXISTS(E3_STEP) && PIN_EXISTS(E3_DIR) && PIN_EXISTS(E3_ENABLE))
+          #if !(PIN_EXISTS(E3_STEP) && PIN_EXISTS(E3_DIR) && HAS_E3_ENABLE)
             #error "E3_STEP_PIN, E3_DIR_PIN, or E3_ENABLE_PIN not defined for this board."
           #endif
           #if E_STEPPERS > 4
-            #if !(PIN_EXISTS(E4_STEP) && PIN_EXISTS(E4_DIR) && PIN_EXISTS(E4_ENABLE))
+            #if !(PIN_EXISTS(E4_STEP) && PIN_EXISTS(E4_DIR) && HAS_E4_ENABLE)
               #error "E4_STEP_PIN, E4_DIR_PIN, or E4_ENABLE_PIN not defined for this board."
             #endif
             #if E_STEPPERS > 5
-              #if !(PIN_EXISTS(E5_STEP) && PIN_EXISTS(E5_DIR) && PIN_EXISTS(E5_ENABLE))
+              #if !(PIN_EXISTS(E5_STEP) && PIN_EXISTS(E5_DIR) && HAS_E5_ENABLE)
                 #error "E5_STEP_PIN, E5_DIR_PIN, or E5_ENABLE_PIN not defined for this board."
               #endif
             #endif // E_STEPPERS > 5
@@ -2006,6 +2024,29 @@ static_assert(sanity_arr_3[0] > 0 && sanity_arr_3[1] > 0 && sanity_arr_3[2] > 0
   #error "GCODE_MACROS_SLOTS must be a number from 1 to 10."
 #endif
 
+#if ENABLED(CUSTOM_USER_MENUS)
+  #ifdef USER_GCODE_1
+    constexpr char _chr1 = USER_GCODE_1[strlen(USER_GCODE_1) - 1];
+    static_assert(_chr1 != '\n' && _chr1 != '\r', "USER_GCODE_1 cannot have a newline at the end. Please remove it.");
+  #endif
+  #ifdef USER_GCODE_2
+    constexpr char _chr2 = USER_GCODE_2[strlen(USER_GCODE_2) - 1];
+    static_assert(_chr2 != '\n' && _chr2 != '\r', "USER_GCODE_2 cannot have a newline at the end. Please remove it.");
+  #endif
+  #ifdef USER_GCODE_3
+    constexpr char _chr3 = USER_GCODE_3[strlen(USER_GCODE_3) - 1];
+    static_assert(_chr3 != '\n' && _chr3 != '\r', "USER_GCODE_3 cannot have a newline at the end. Please remove it.");
+  #endif
+  #ifdef USER_GCODE_4
+    constexpr char _chr4 = USER_GCODE_4[strlen(USER_GCODE_4) - 1];
+    static_assert(_chr4 != '\n' && _chr4 != '\r', "USER_GCODE_4 cannot have a newline at the end. Please remove it.");
+  #endif
+  #ifdef USER_GCODE_5
+    constexpr char _chr5 = USER_GCODE_5[strlen(USER_GCODE_5) - 1];
+    static_assert(_chr5 != '\n' && _chr5 != '\r', "USER_GCODE_5 cannot have a newline at the end. Please remove it.");
+  #endif
+#endif
+
 #if ENABLED(BACKLASH_COMPENSATION) && IS_CORE
   #error "BACKLASH_COMPENSATION is incompatible with CORE kinematics."
 #endif
@@ -2022,5 +2063,18 @@ static_assert(sanity_arr_3[0] > 0 && sanity_arr_3[1] > 0 && sanity_arr_3[2] > 0
   #endif
   #if DISABLED(FIX_MOUNTED_PROBE)
     #error "AUTO_NOZZLE_Z_OFFSET_CAL requires FIX_MOUNTED_PROBE as probing done directly by nozzle"
+  #endif
+#endif
+
+/**
+ * Prusa MMU2 requirements
+ */
+#if ENABLED(PRUSA_MMU2)
+  #if DISABLED(NOZZLE_PARK_FEATURE)
+    #error "PRUSA_MMU2 requires NOZZLE_PARK_FEATURE."
+  #elif EXTRUDERS != 5
+    #error "PRUSA_MMU2 requires EXTRUDERS = 5."
+  #elif DISABLED(ADVANCED_PAUSE_FEATURE)
+    static_assert(NULL == strstr(MMU2_FILAMENT_RUNOUT_SCRIPT, "M600"), "ADVANCED_PAUSE_FEATURE is required to use M600 with PRUSA_MMU2.");
   #endif
 #endif

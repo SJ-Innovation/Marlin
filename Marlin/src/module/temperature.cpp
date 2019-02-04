@@ -96,6 +96,10 @@ Temperature thermalManager;
 
 // public:
 
+#if ENABLED(NO_FAN_SLOWING_IN_PID_TUNING)
+  bool Temperature::adaptive_fan_slowing = true;
+#endif
+
 float Temperature::current_temperature[HOTENDS]; // = { 0.0 };
 int16_t Temperature::current_temperature_raw[HOTENDS], // = { 0 }
         Temperature::target_temperature[HOTENDS]; // = { 0 }
@@ -111,7 +115,7 @@ int16_t Temperature::current_temperature_raw[HOTENDS], // = { 0 }
   #if ENABLED(EXTRA_FAN_SPEED)
     uint8_t Temperature::old_fan_speed[FAN_COUNT], Temperature::new_fan_speed[FAN_COUNT];
 
-    void Temperature::set_temp_fan_speed(const uint8_t fan, const int16_t tmp_temp) {
+    void Temperature::set_temp_fan_speed(const uint8_t fan, const uint16_t tmp_temp) {
       switch (tmp_temp) {
         case 1:
           set_fan_speed(fan, old_fan_speed[fan]);
@@ -162,9 +166,9 @@ int16_t Temperature::current_temperature_raw[HOTENDS], // = { 0 }
     #endif
 
     if (target >= FAN_COUNT) return;
-    
+
     fan_speed[target] = speed;
-    #if ENABLED(ULTRA_LCD)
+    #if HAS_LCD_MENU
       lcd_tmpfan_speed[target] = speed;
     #endif
   }
@@ -392,6 +396,10 @@ uint8_t Temperature::soft_pwm_amount[HOTENDS];
       LEDColor color = ONHEATINGSTART();
     #endif
 
+    #if ENABLED(NO_FAN_SLOWING_IN_PID_TUNING)
+      adaptive_fan_slowing = false;
+    #endif
+
     // PID Tuning loop
     while (wait_for_heatup) {
 
@@ -570,18 +578,27 @@ uint8_t Temperature::soft_pwm_amount[HOTENDS];
             _SET_BED_PID();
           #endif
         }
+
         #if ENABLED(PRINTER_EVENT_LEDS)
           printerEventLEDs.onPidTuningDone(color);
         #endif
 
-        return;
+        goto EXIT_M303;
       }
       ui.update();
     }
+
     disable_all_heaters();
+
     #if ENABLED(PRINTER_EVENT_LEDS)
       printerEventLEDs.onPidTuningDone(color);
     #endif
+
+    EXIT_M303:
+      #if ENABLED(NO_FAN_SLOWING_IN_PID_TUNING)
+        adaptive_fan_slowing = true;
+      #endif
+      return;
   }
 
 #endif // HAS_PID_HEATING
@@ -1627,8 +1644,8 @@ void Temperature::init() {
       // While the temperature is stable watch for a bad temperature
       case TRStable:
 
-        #if ENABLED(ADAPTIVE_FAN_SLOWING) && FAN_COUNT > 0
-          if (heater_id >= 0) {
+        #if ENABLED(ADAPTIVE_FAN_SLOWING)
+          if (adaptive_fan_slowing && heater_id >= 0) {
             const int fan_index = MIN(heater_id, FAN_COUNT - 1);
             if (fan_speed[fan_index] == 0 || current >= tr_target_temperature[heater_id] - (hysteresis_degc * 0.25f))
               fan_speed_scaler[fan_index] = 128;
@@ -1739,6 +1756,9 @@ void Temperature::disable_all_heaters() {
   ) {
     #if COUNT_6675 == 1
       constexpr uint8_t hindex = 0;
+    #else
+      // Needed to return the correct temp when this is called too soon
+      static uint16_t max6675_temp_previous[COUNT_6675] = { 0 };
     #endif
 
     #define MAX6675_HEAT_INTERVAL 250UL
@@ -1758,7 +1778,15 @@ void Temperature::disable_all_heaters() {
     // Return last-read value between readings
     static millis_t next_max6675_ms[COUNT_6675] = { 0 };
     millis_t ms = millis();
-    if (PENDING(ms, next_max6675_ms[hindex])) return int(max6675_temp);
+    if (PENDING(ms, next_max6675_ms[hindex]))
+      return int(
+        #if COUNT_6675 == 1
+          max6675_temp
+        #else
+          max6675_temp_previous[hindex] // Need to return the correct previous value
+        #endif
+      );
+
     next_max6675_ms[hindex] = ms + MAX6675_HEAT_INTERVAL;
 
     //
@@ -1824,10 +1852,14 @@ void Temperature::disable_all_heaters() {
     }
     else
       max6675_temp >>= MAX6675_DISCARD_BITS;
-      #if ENABLED(MAX6675_IS_MAX31855)
-        // Support negative temperature
-        if (max6675_temp & 0x00002000) max6675_temp |= 0xFFFFC000;
-      #endif
+
+    #if ENABLED(MAX6675_IS_MAX31855)
+      if (max6675_temp & 0x00002000) max6675_temp |= 0xFFFFC000; // Support negative temperature
+    #endif
+
+    #if COUNT_6675 > 1
+      max6675_temp_previous[hindex] = max6675_temp;
+    #endif
 
     return int(max6675_temp);
   }
