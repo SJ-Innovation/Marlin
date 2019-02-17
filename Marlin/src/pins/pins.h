@@ -412,6 +412,8 @@
   #include "pins_MORPHEUS.h"          // STM32F1                                    env:STM32F1
 #elif MB(MKS_ROBIN)
   #include "pins_MKS_ROBIN.h"         // STM32F1                                    env:STM32F1
+#elif MB(EPIC)
+  #include "pins_EPIC.h"              // STMF103ZET6                                env:EPIC
 
 //
 // STM32 ARM Cortex-M4F
