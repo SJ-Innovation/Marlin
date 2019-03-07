@@ -1,22 +1,64 @@
 #pragma once
 
 
+#define ENCODER_1_TIMER_NUM 1 // Optionally used for INTERNAL_CLOSED_LOOP_CONTROLLER
+#define ENCODER_2_TIMER_NUM 4
+#define ENCODER_3_TIMER_NUM 5
+#define ENCODER_4_TIMER_NUM 8
+
+enum class TIMER_1_ENCODER_PINS {
+  A = PE9,
+  B = PE11
+};
+
+enum class TIMER_2_ENCODER_PINS {
+  A = PA15,
+  B = PB3
+};
+
+enum class TIMER_3_ENCODER_PINS {
+  A = PA6,
+  B = PA7
+};
+
+enum class TIMER_4_ENCODER_PINS {
+  A = PD12,
+  B = PD13
+};
+
+enum class TIMER_5_ENCODER_PINS {
+  A = PA0,
+  B = PA1
+};
+
+enum class TIMER_8_ENCODER_PINS {
+  A = PC6,
+  B = PC7
+};
+
+#define _ENCODER_PINS(TIMER_NUM) TIMER_ ## TIMER_NUM ## _ENCODER_PINS
+#define ENCODER_PINS(TIMER_NUM) _ENCODER_PINS(TIMER_NUM)
+
+#if TIMER_SANITY_CHECK(ENCODER_1)
+  #error ENCODER_1 currently used by a critical system
+#elif TIMER_SANITY_CHECK(ENCODER_2)
+  #error ENCODER_2 currently used by a critical system
+#elif TIMER_SANITY_CHECK(ENCODER_3)
+  #error ENCODER_3 currently used by a critical system
+#elif TIMER_SANITY_CHECK(ENCODER_4)
+  #error ENCODER_4 currently used by a critical system
+#endif
+
 // Closed Loop Encoders
-#define X_ENCODER_A PE9
-#define X_ENCODER_B PE11
-#define X_ENCODER_TIMER_NUM
 
-#define Y_ENCODER_A PA0
-#define Y_ENCODER_B PA1
-#define Y_ENCODER_TIMER_NUM
+#define X_ENCODER_TIMER_NUM ENCODER_1_TIMER_NUM
+#define Y_ENCODER_TIMER_NUM ENCODER_3_TIMER_NUM
+#define SPA_ENCODER_TIMER_NUM ENCODER_3_TIMER_NUM
+#define SPB_ENCODER_TIMER_NUM ENCODER_4_TIMER_NUM
 
-#define SPA_ENCODER_A PD12
-#define SPA_ENCODER_B PD13
-#define SPA_ENCODER_TIMER_NUM
-
-#define SPB_ENCODER_A PC6
-#define SPB_ENCODER_B PC7
-#define SPB_ENCODER_TIMER_NUM
+//typedef struct {
+//  uint8_t Pin_A = PC0
+//} EncoderSetup_t;
 
 // Motors
 #define X_DIR_PIN PE2
@@ -119,3 +161,11 @@
 #define EXP2_10_PIN PD11
 
 
+
+// BS PINS FTTB
+
+#define HEATER_0_PIN 1
+#define TEMP_0_PIN 1
+#define X_MIN_PIN 1
+#define Y_MIN_PIN 1
+#define Z_MIN_PIN 1

@@ -299,6 +299,8 @@
   //#define CLOSED_LOOP_MOVE_COMPLETE_PIN -1
 #endif
 
+#define INTERNAL_CLOSED_LOOP_CONTROLLER
+
 /**
  * Dual Steppers / Dual Endstops
  *

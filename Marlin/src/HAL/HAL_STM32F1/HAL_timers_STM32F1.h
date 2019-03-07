@@ -53,9 +53,9 @@ typedef uint16_t hal_timer_t;
 #if defined(MCU_STM32F103CB) || defined(MCU_STM32F103C8)
   #define STEP_TIMER_NUM 4 // For C8/CB boards, use timer 4
 #else
-  #define STEP_TIMER_NUM 5 // for other boards, five is fine.
+  #define STEP_TIMER_NUM 2 // for other boards, two is fine.
 #endif
-#define TEMP_TIMER_NUM 2  // index of timer to use for temperature
+#define TEMP_TIMER_NUM 3  // index of timer to use for temperature
 #define PULSE_TIMER_NUM STEP_TIMER_NUM
 
 #define TEMP_TIMER_PRESCALE     1000 // prescaler for setting Temp timer, 72Khz
@@ -68,6 +68,8 @@ typedef uint16_t hal_timer_t;
 #define PULSE_TIMER_RATE       STEPPER_TIMER_RATE   // frequency of pulse timer
 #define PULSE_TIMER_PRESCALE   STEPPER_TIMER_PRESCALE
 #define PULSE_TIMER_TICKS_PER_US STEPPER_TIMER_TICKS_PER_US
+
+#define TIMER_SANITY_CHECK(ID) ID##_TIMER_NUM == STEP_TIMER_NUM || ID##_TIMER_NUM == PULSE_TIMER_NUM || ID##_TIMER_NUM == TEMP_TIMER_NUM
 
 timer_dev* get_timer_dev(int number);
 #define TIMER_DEV(num) get_timer_dev(num)
