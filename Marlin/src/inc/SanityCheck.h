@@ -1344,6 +1344,97 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
   #endif
 #endif
 
+
+
+/**
+ * Tests for Closed Loop Subsystems
+ */
+#if USES_SPI_CLOSEDLOOP && defined(EXTERNAL_CLOSED_LOOP_CONTROLLER)
+  #error "Can Only use SPI_CLOSEDLOOP or EXTERNAL_CLOSED_LOOP_CONTROLLER independently"
+#endif
+
+
+
+#if USES_SPI_CLOSEDLOOP
+  #define SPI_CL_SANITY_TEST(AXIS) DO(PINEX,&&,AXIS##_SPI_CLOSEDLOOP_CS,AXIS##_SPI_CLOSEDLOOP_CLOK,AXIS##_SPI_CLOSEDLOOP_ATTNREQ)
+  #ifdef HAS_X_SPI_CLOSEDLOOP
+    #if !SPI_CL_SANITY_TEST(X)
+      #error "X_SPI_CLOSEDLOOP_CS_PIN   X_SPI_CLOSEDLOOP_CLOK_PIN   X_SPI_CLOSEDLOOP_ATTNREQ_PIN must all be defined for SPI_CLOSEDLOOP"
+    #endif
+  #endif
+
+  #ifdef HAS_X2_SPI_CLOSEDLOOP
+    #if !SPI_CL_SANITY_TEST(X2)
+      #error "X2_SPI_CLOSEDLOOP_CS_PIN   X2_SPI_CLOSEDLOOP_CLOK_PIN   X2_SPI_CLOSEDLOOP_ATTNREQ_PIN must all be defined for SPI_CLOSEDLOOP"
+    #endif
+  #endif
+
+  #ifdef HAS_Y_SPI_CLOSEDLOOP
+    #if !SPI_CL_SANITY_TEST(Y)
+      #error "Y_SPI_CLOSEDLOOP_CS_PIN   Y_SPI_CLOSEDLOOP_CLOK_PIN   Y_SPI_CLOSEDLOOP_ATTNREQ_PIN must all be defined for SPI_CLOSEDLOOP"
+    #endif
+  #endif
+
+  #ifdef HAS_Y2_SPI_CLOSEDLOOP
+    #if !SPI_CL_SANITY_TEST(Y2)
+      #error "Y2_SPI_CLOSEDLOOP_CS_PIN   Y2_SPI_CLOSEDLOOP_CLOK_PIN   Y2_SPI_CLOSEDLOOP_ATTNREQ_PIN must all be defined for SPI_CLOSEDLOOP"
+    #endif
+  #endif
+
+  #ifdef HAS_Z_SPI_CLOSEDLOOP
+    #if !SPI_CL_SANITY_TEST(Z)
+      #error "Z_SPI_CLOSEDLOOP_CS_PIN   Z_SPI_CLOSEDLOOP_CLOK_PIN   Z_SPI_CLOSEDLOOP_ATTNREQ_PIN must all be defined for SPI_CLOSEDLOOP"
+    #endif
+  #endif
+
+  #ifdef HAS_Z2_SPI_CLOSEDLOOP
+    #if !SPI_CL_SANITY_TEST(Z2)
+      #error "Z2_SPI_CLOSEDLOOP_CS_PIN   Z2_SPI_CLOSEDLOOP_CLOK_PIN   Z2_SPI_CLOSEDLOOP_ATTNREQ_PIN must all be defined for SPI_CLOSEDLOOP"
+    #endif
+  #endif
+
+  #ifdef HAS_Z3_SPI_CLOSEDLOOP
+    #if !SPI_CL_SANITY_TEST(Z3)
+      #error "Z3_SPI_CLOSEDLOOP_CS_PIN   Z3_SPI_CLOSEDLOOP_CLOK_PIN   Z3_SPI_CLOSEDLOOP_ATTNREQ_PIN must all be defined for SPI_CLOSEDLOOP"
+    #endif
+  #endif
+
+  #ifdef HAS_E0_SPI_CLOSEDLOOP
+    #if !SPI_CL_SANITY_TEST(E0)
+      #error "E0_SPI_CLOSEDLOOP_CS_PIN   E0_SPI_CLOSEDLOOP_CLOK_PIN   E0_SPI_CLOSEDLOOP_ATTNREQ_PIN must all be defined for SPI_CLOSEDLOOP"
+    #endif
+  #endif
+
+  #ifdef HAS_E1_SPI_CLOSEDLOOP
+    #if !SPI_CL_SANITY_TEST(E1)
+      #error "E1_SPI_CLOSEDLOOP_CS_PIN   E1_SPI_CLOSEDLOOP_CLOK_PIN   E1_SPI_CLOSEDLOOP_ATTNREQ_PIN must all be defined for SPI_CLOSEDLOOP"
+    #endif
+  #endif
+  #ifdef HAS_E2_SPI_CLOSEDLOOP
+    #if !SPI_CL_SANITY_TEST(E2)
+      #error "E2_SPI_CLOSEDLOOP_CS_PIN   E2_SPI_CLOSEDLOOP_CLOK_PIN   E2_SPI_CLOSEDLOOP_ATTNREQ_PIN must all be defined for SPI_CLOSEDLOOP"
+    #endif
+  #endif
+  #ifdef HAS_E3_SPI_CLOSEDLOOP
+    #if !SPI_CL_SANITY_TEST(E3)
+      #error "E3_SPI_CLOSEDLOOP_CS_PIN   E3_SPI_CLOSEDLOOP_CLOK_PIN   E3_SPI_CLOSEDLOOP_ATTNREQ_PIN must all be defined for SPI_CLOSEDLOOP"
+    #endif
+  #endif
+  #ifdef HAS_E4_SPI_CLOSEDLOOP
+    #if !SPI_CL_SANITY_TEST(E4)
+      #error "E4_SPI_CLOSEDLOOP_CS_PIN   E4_SPI_CLOSEDLOOP_CLOK_PIN   E4_SPI_CLOSEDLOOP_ATTNREQ_PIN must all be defined for SPI_CLOSEDLOOP"
+    #endif
+  #endif
+  #ifdef HAS_E5_SPI_CLOSEDLOOP
+    #if !SPI_CL_SANITY_TEST(E5)
+      #error "E5_SPI_CLOSEDLOOP_CS_PIN   E5_SPI_CLOSEDLOOP_CLOK_PIN   E5_SPI_CLOSEDLOOP_ATTNREQ_PIN must all be defined for SPI_CLOSEDLOOP"
+    #endif
+  #endif
+#endif
+
+
+
+
 /**
  * Test case light not using the same pin as the fan
  */
@@ -1377,7 +1468,7 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
  */
 #if !HAS_HEATER_0
   #error "HEATER_0_PIN not defined for this board."
-#elif !ANY_PIN(TEMP_0, MAX6675_SS)
+#elif !ANY_PIN(TEMP_0, MAX6675_SS) && !defined(SENSOR_0_USES_SPI_CONTROLLER)
   #error "TEMP_0_PIN not defined for this board."
 #elif ((defined(__AVR_ATmega644P__) || defined(__AVR_ATmega1284P__)) && !PIN_EXISTS(E0_STEP, E0_DIR))
   #error "E0_STEP_PIN or E0_DIR_PIN not defined for this board."
@@ -1387,10 +1478,20 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
   #error "TEMP_SENSOR_0 is required."
 #endif
 
+#if ENABLED(SENSOR_BED_USES_SPI_CONTROLLER) && (!defined(SENSOR_BED_THERMISTOR_CHANNEL) || SENSOR_BED_THERMISTOR_CHANNEL==-1)
+  #error "SENSOR_BED_THERMISTOR_CHANNEL must be defined when using SPI_CONTROLLER"
+#endif
+#if ENABLED(SENSOR_CHAMBER_USES_SPI_CONTROLLER) && (!defined(SENSOR_CHAMBER_THERMISTOR_CHANNEL) || SENSOR_CHAMBER_THERMISTOR_CHANNEL==-1)
+  #error "SENSOR_CHAMBER_THERMISTOR_CHANNEL must be defined when using SPI_CONTROLLER"
+#endif
+
+
 // Pins are required for heaters
 #if ENABLED(HEATER_0_USES_MAX6675) && !PIN_EXISTS(MAX6675_SS)
   #error "MAX6675_SS_PIN (required for TEMP_SENSOR_0) not defined for this board."
-#elif (HOTENDS > 1 || ENABLED(HEATERS_PARALLEL)) && !HAS_HEATER_1
+#elif ENABLED(SENSOR_0_USES_SPI_CONTROLLER) && (!defined(SENSOR_0_THERMISTOR_CHANNEL) || SENSOR_0_THERMISTOR_CHANNEL==-1)
+  #error "SENSOR_0_THERMISTOR_CHANNEL must be defined when using SPI_CONTROLLER"
+#elif (HOTENDS > 1 || ENABLED(HEATERS_PARALLEL)) && (!HAS_HEATER_1)
   #error "HEATER_1_PIN not defined for this board."
 #endif
 
@@ -1399,40 +1500,50 @@ static_assert(Y_MAX_LENGTH >= Y_BED_SIZE, "Movement bounds (Y_MIN_POS, Y_MAX_POS
     #error "MAX6675_SS2_PIN (required for TEMP_SENSOR_1) not defined for this board."
   #elif TEMP_SENSOR_1 == 0
     #error "TEMP_SENSOR_1 is required with 2 or more HOTENDS."
-  #elif !ANY_PIN(TEMP_1, MAX6675_SS2)
+  #elif !ANY_PIN(TEMP_1, MAX6675_SS2) && !defined(SENSOR_1_USES_SPI_CONTROLLER)
     #error "TEMP_1_PIN not defined for this board."
+  #elif ENABLED(SENSOR_1_USES_SPI_CONTROLLER) && (!defined(SENSOR_1_THERMISTOR_CHANNEL) || SENSOR_1_THERMISTOR_CHANNEL==-1)
+    #error "SENSOR_1_THERMISTOR_CHANNEL must be defined when using SPI_CONTROLLER"
   #endif
   #if HOTENDS > 2
     #if TEMP_SENSOR_2 == 0
       #error "TEMP_SENSOR_2 is required with 3 or more HOTENDS."
     #elif !HAS_HEATER_2
       #error "HEATER_2_PIN not defined for this board."
-    #elif !PIN_EXISTS(TEMP_2)
+    #elif !PIN_EXISTS(TEMP_2) && !defined(SENSOR_2_USES_SPI_CONTROLLER)
       #error "TEMP_2_PIN not defined for this board."
+    #elif ENABLED(SENSOR_2_USES_SPI_CONTROLLER) && (!defined(SENSOR_2_THERMISTOR_CHANNEL) || SENSOR_2_THERMISTOR_CHANNEL==-1)
+      #error "SENSOR_2_THERMISTOR_CHANNEL must be defined when using SPI_CONTROLLER"
     #endif
     #if HOTENDS > 3
       #if TEMP_SENSOR_3 == 0
         #error "TEMP_SENSOR_3 is required with 4 or more HOTENDS."
       #elif !HAS_HEATER_3
         #error "HEATER_3_PIN not defined for this board."
-      #elif !PIN_EXISTS(TEMP_3)
+      #elif !PIN_EXISTS(TEMP_3) && !defined(SENSOR_3_USES_SPI_CONTROLLER)
         #error "TEMP_3_PIN not defined for this board."
+      #elif ENABLED(SENSOR_3_USES_SPI_CONTROLLER) && (!defined(SENSOR_3_THERMISTOR_CHANNEL) || SENSOR_3_THERMISTOR_CHANNEL==-1)
+        #error "SENSOR_3_THERMISTOR_CHANNEL must be defined when using SPI_CONTROLLER"
       #endif
       #if HOTENDS > 4
         #if TEMP_SENSOR_4 == 0
           #error "TEMP_SENSOR_4 is required with 5 or more HOTENDS."
         #elif !HAS_HEATER_4
           #error "HEATER_4_PIN not defined for this board."
-        #elif !PIN_EXISTS(TEMP_4)
+        #elif !PIN_EXISTS(TEMP_4) && !defined(SENSOR_4_USES_SPI_CONTROLLER)
           #error "TEMP_4_PIN not defined for this board."
+        #elif ENABLED(SENSOR_4_USES_SPI_CONTROLLER) && (!defined(SENSOR_4_THERMISTOR_CHANNEL) || SENSOR_4_THERMISTOR_CHANNEL==-1)
+          #error "SENSOR_4_THERMISTOR_CHANNEL must be defined when using SPI_CONTROLLER"
         #endif
         #if HOTENDS > 5
           #if TEMP_SENSOR_5 == 0
             #error "TEMP_SENSOR_5 is required with 6 HOTENDS."
           #elif !HAS_HEATER_5
             #error "HEATER_5_PIN not defined for this board."
-          #elif !PIN_EXISTS(TEMP_5)
+          #elif !PIN_EXISTS(TEMP_5) && !defined(SENSOR_5_USES_SPI_CONTROLLER)
             #error "TEMP_5_PIN not defined for this board."
+          #elif ENABLED(SENSOR_5_USES_SPI_CONTROLLER) && (!defined(SENSOR_5_THERMISTOR_CHANNEL) || SENSOR_5_THERMISTOR_CHANNEL==-1)
+            #error "SENSOR_5_THERMISTOR_CHANNEL must be defined when using SPI_CONTROLLER"
           #endif
         #elif TEMP_SENSOR_5 != 0
           #error "TEMP_SENSOR_5 shouldn't be set with only 5 HOTENDS."

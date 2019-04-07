@@ -39,6 +39,10 @@
   #include "../libs/private_spi.h"
 #endif
 
+#if USES_SPI_THERMAL_SENSORS
+  #include "../feature/Uni3D_Modular_Peripherals/spi_thermal_sensors.h"
+#endif
+
 #if EITHER(BABYSTEPPING, PID_EXTRUSION_SCALING)
   #include "stepper.h"
 #endif
@@ -1461,8 +1465,38 @@ void Temperature::updateTemperaturesFromRawValues() {
   #if ENABLED(HEATER_1_USES_MAX6675)
     temp_hotend[1].raw = READ_MAX6675(1);
   #endif
+
+  #if USES_SPI_THERMAL_SENSORS
+    spi_thermal_sensors_update_raw();
+    uint8_t cidx = 0;
+    #ifdef SENSOR_0_USES_SPI_CONTROLLER
+      temp_hotend[0].raw = spi_thermal_sensor_raw[cidx++];
+    #endif
+    #ifdef SENSOR_1_USES_SPI_CONTROLLER
+      temp_hotend[1].raw = spi_thermal_sensor_raw[cidx++];
+    #endif
+    #ifdef SENSOR_2_USES_SPI_CONTROLLER
+      temp_hotend[2].raw = spi_thermal_sensor_raw[cidx++];
+    #endif
+    #ifdef SENSOR_3_USES_SPI_CONTROLLER
+      temp_hotend[3].raw = spi_thermal_sensor_raw[cidx++];
+    #endif
+    #ifdef SENSOR_4_USES_SPI_CONTROLLER
+      temp_hotend[4].raw = spi_thermal_sensor_raw[cidx++];
+    #endif
+    #ifdef SENSOR_5_USES_SPI_CONTROLLER
+      temp_hotend[5].raw = spi_thermal_sensor_raw[cidx++];
+    #endif
+    #ifdef SENSOR_BED_USES_SPI_CONTROLLER
+      temp_bed.raw = spi_thermal_sensor_raw[cidx++];
+    #endif
+    #ifdef SENSOR_CHAMBER_USES_SPI_CONTROLLER
+      temp_chamber.raw = spi_thermal_sensor_raw[cidx++];
+    #endif
+  #endif
+
   HOTEND_LOOP() temp_hotend[e].current = analog_to_celsius_hotend(temp_hotend[e].raw, e);
-  #if HAS_HEATED_BED
+  #if HAS_TEMP_BED
     temp_bed.current = analog_to_celsius_bed(temp_bed.raw);
   #endif
   #if HAS_TEMP_CHAMBER
@@ -1618,6 +1652,10 @@ void Temperature::init() {
 
   HAL_adc_init();
 
+  #if USES_SPI_THERMAL_SENSORS
+    spi_thermal_sensors_init();
+  #endif
+
   #if HAS_TEMP_ADC_0
     HAL_ANALOG_SELECT(TEMP_0_PIN);
   #endif
@@ -1636,10 +1674,10 @@ void Temperature::init() {
   #if HAS_TEMP_ADC_5
     HAL_ANALOG_SELECT(TEMP_5_PIN);
   #endif
-  #if HAS_HEATED_BED
+  #if HAS_HEATED_ADC_BED
     HAL_ANALOG_SELECT(TEMP_BED_PIN);
   #endif
-  #if HAS_TEMP_CHAMBER
+  #if HAS_TEMP_ADC_CHAMBER
     HAL_ANALOG_SELECT(TEMP_CHAMBER_PIN);
   #endif
   #if ENABLED(FILAMENT_WIDTH_SENSOR)
@@ -2124,25 +2162,29 @@ void Temperature::set_current_temp_raw() {
     #elif DISABLED(HEATER_1_USES_MAX6675)
       temp_hotend[1].raw = temp_hotend[1].acc;
     #endif
-    #if HAS_TEMP_ADC_2
-      temp_hotend[2].raw = temp_hotend[2].acc;
-      #if HAS_TEMP_ADC_3
-        temp_hotend[3].raw = temp_hotend[3].acc;
-        #if HAS_TEMP_ADC_4
-          temp_hotend[4].raw = temp_hotend[4].acc;
-          #if HAS_TEMP_ADC_5
-            temp_hotend[5].raw = temp_hotend[5].acc;
-          #endif // HAS_TEMP_ADC_5
-        #endif // HAS_TEMP_ADC_4
-      #endif // HAS_TEMP_ADC_3
-    #endif // HAS_TEMP_ADC_2
-  #endif // HAS_TEMP_ADC_1
+  #endif
 
-  #if HAS_HEATED_BED
+  #if HAS_TEMP_ADC_2
+      temp_hotend[2].raw = temp_hotend[2].acc;
+  #endif
+
+  #if HAS_TEMP_ADC_3
+    temp_hotend[3].raw = temp_hotend[3].acc;
+  #endif
+
+  #if HAS_TEMP_ADC_4
+    temp_hotend[4].raw = temp_hotend[4].acc;
+  #endif
+
+  #if HAS_TEMP_ADC_5
+     temp_hotend[5].raw = temp_hotend[5].acc;
+  #endif
+
+  #if HAS_TEMP_ADC_BED
     temp_bed.raw = temp_bed.acc;
   #endif
 
-  #if HAS_TEMP_CHAMBER
+  #if HAS_TEMP_ADC_CHAMBER
     temp_chamber.raw = temp_chamber.acc;
   #endif
 
@@ -2616,7 +2658,7 @@ void Temperature::isr() {
         break;
     #endif
 
-    #if HAS_HEATED_BED
+    #if HAS_TEMP_ADC_BED
       case PrepareTemp_BED:
         HAL_START_ADC(TEMP_BED_PIN);
         break;
@@ -2625,7 +2667,7 @@ void Temperature::isr() {
         break;
     #endif
 
-    #if HAS_TEMP_CHAMBER
+    #if HAS_TEMP_ADC_CHAMBER
       case PrepareTemp_CHAMBER:
         HAL_START_ADC(TEMP_CHAMBER_PIN);
         break;

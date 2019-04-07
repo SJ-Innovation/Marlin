@@ -214,7 +214,7 @@
  */
 #if ENABLED(Z_SAFE_HOMING)
   #if ENABLED(AUTO_BED_LEVELING_UBL)
-    // Home close to center so grid points have z heights very close to 0
+// Home close to center so grid points have z heights very close to 0
     #define _SAFE_POINT(A) (((GRID_MAX_POINTS_##A) / 2) * (A##_BED_SIZE - 2 * (MESH_INSET)) / (GRID_MAX_POINTS_##A - 1) + MESH_INSET)
   #else
     #define _SAFE_POINT(A) A##_CENTER
@@ -283,6 +283,58 @@
 #endif
 #define HAS_POWER_SWITCH (POWER_SUPPLY > 0 && PIN_EXISTS(PS_ON))
 
+
+
+/**
+ * SPI Closed Loop Defines
+ */
+#define SPI_CL_TEST(AXIS) DO(PINEX,||,AXIS##_SPI_CLOSEDLOOP_CS,AXIS##_SPI_CLOSEDLOOP_CLOK,AXIS##_SPI_CLOSEDLOOP_ATTNREQ)
+
+#if SPI_CL_TEST(X)
+  #define HAS_X_SPI_CLOSEDLOOP
+#endif
+#if SPI_CL_TEST(X2)
+  #define HAS_X2_SPI_CLOSEDLOOP
+#endif
+#if SPI_CL_TEST(Y)
+  #define HAS_Y_SPI_CLOSEDLOOP
+#endif
+#if SPI_CL_TEST(Y2)
+  #define HAS_Y2_SPI_CLOSEDLOOP
+#endif
+#if SPI_CL_TEST(Z)
+  #define HAS_Z_SPI_CLOSEDLOOP
+#endif
+#if SPI_CL_TEST(Z2)
+  #define HAS_Z2_SPI_CLOSEDLOOP
+#endif
+#if SPI_CL_TEST(Z3)
+  #define HAS_Z3_SPI_CLOSEDLOOP
+#endif
+#if SPI_CL_TEST(E0)
+  #define HAS_E0_SPI_CLOSEDLOOP
+#endif
+#if SPI_CL_TEST(E1)
+  #define HAS_E1_SPI_CLOSEDLOOP
+#endif
+#if SPI_CL_TEST(E2)
+  #define HAS_E2_SPI_CLOSEDLOOP
+#endif
+#if SPI_CL_TEST(E3)
+  #define HAS_E3_SPI_CLOSEDLOOP
+#endif
+#if SPI_CL_TEST(E4)
+  #define HAS_E4_SPI_CLOSEDLOOP
+#endif
+#if SPI_CL_TEST(E5)
+  #define HAS_E5_SPI_CLOSEDLOOP
+#endif
+
+#define USES_SPI_CLOSEDLOOP (defined(HAS_X_SPI_CLOSEDLOOP) || defined(HAS_X2_SPI_CLOSEDLOOP) || defined(HAS_Y_SPI_CLOSEDLOOP) || defined(HAS_Y2_SPI_CLOSEDLOOP) || defined(HAS_Z_SPI_CLOSEDLOOP) || defined(HAS_Z2_SPI_CLOSEDLOOP) || defined(HAS_Z3_CLOSEDLOOP)|| defined(HAS_E0_CLOSEDLOOP)|| defined(HAS_E1_CLOSEDLOOP)|| defined(HAS_E2_CLOSEDLOOP)|| defined(HAS_E3_CLOSEDLOOP)|| defined(HAS_E4_CLOSEDLOOP)|| defined(HAS_E5_CLOSEDLOOP))
+
+
+#define HAS_CLOSEDLOOP (USES_SPI_CLOSEDLOOP || ENABLED(EXTERNAL_CLOSED_LOOP_CONTROLLER))
+
 /**
  * Temp Sensor defines
  */
@@ -290,6 +342,11 @@
 #define ANY_TEMP_SENSOR_IS(n) (TEMP_SENSOR_0 == (n) || TEMP_SENSOR_1 == (n) || TEMP_SENSOR_2 == (n) || TEMP_SENSOR_3 == (n) || TEMP_SENSOR_4 == (n) || TEMP_SENSOR_5 == (n) || TEMP_SENSOR_BED == (n) || TEMP_SENSOR_CHAMBER == (n))
 
 #define HAS_USER_THERMISTORS ANY_TEMP_SENSOR_IS(1000)
+
+
+#if defined(SENSOR_0_THERMISTOR_CHANNEL) && SENSOR_0_THERMISTOR_CHANNEL != -1
+  #define SENSOR_0_USES_SPI_CONTROLLER
+#endif
 
 #if TEMP_SENSOR_0 == -4
   #define HEATER_0_USES_AD8495
@@ -314,6 +371,9 @@
   #undef HEATER_0_MAXTEMP
 #endif
 
+#if defined(SENSOR_1_THERMISTOR_CHANNEL) && SENSOR_1_THERMISTOR_CHANNEL != -1
+  #define SENSOR_1_USES_SPI_CONTROLLER
+#endif
 #if TEMP_SENSOR_1 == -4
   #define HEATER_1_USES_AD8495
 #elif TEMP_SENSOR_1 == -3
@@ -342,6 +402,9 @@
   #undef HEATER_1_MAXTEMP
 #endif
 
+#if defined(SENSOR_2_THERMISTOR_CHANNEL) && SENSOR_2_THERMISTOR_CHANNEL != -1
+  #define SENSOR_2_USES_SPI_CONTROLLER
+#endif
 #if TEMP_SENSOR_2 == -4
   #define HEATER_2_USES_AD8495
 #elif TEMP_SENSOR_2 == -3
@@ -360,6 +423,9 @@
   #undef HEATER_2_MAXTEMP
 #endif
 
+#if defined(SENSOR_3_THERMISTOR_CHANNEL) && SENSOR_3_THERMISTOR_CHANNEL != -1
+  #define SENSOR_3_USES_SPI_CONTROLLER
+#endif
 #if TEMP_SENSOR_3 == -4
   #define HEATER_3_USES_AD8495
 #elif TEMP_SENSOR_3 == -3
@@ -378,6 +444,9 @@
   #undef HEATER_3_MAXTEMP
 #endif
 
+#if defined(SENSOR_4_THERMISTOR_CHANNEL) && SENSOR_4_THERMISTOR_CHANNEL != -1
+  #define SENSOR_4_USES_SPI_CONTROLLER
+#endif
 #if TEMP_SENSOR_4 == -4
   #define HEATER_4_USES_AD8495
 #elif TEMP_SENSOR_4 == -3
@@ -396,6 +465,9 @@
   #undef HEATER_4_MAXTEMP
 #endif
 
+#if defined(SENSOR_5_THERMISTOR_CHANNEL) && SENSOR_5_THERMISTOR_CHANNEL != -1
+  #define SENSOR_5_USES_SPI_CONTROLLER
+#endif
 #if TEMP_SENSOR_5 == -4
   #define HEATER_5_USES_AD8495
 #elif TEMP_SENSOR_5 == -3
@@ -414,6 +486,9 @@
   #undef HEATER_5_MAXTEMP
 #endif
 
+#if defined(SENSOR_BED_THERMISTOR_CHANNEL) && SENSOR_BED_THERMISTOR_CHANNEL != -1
+  #define SENSOR_BED_USES_SPI_CONTROLLER
+#endif
 #if TEMP_SENSOR_BED == -4
   #define HEATER_BED_USES_AD8495
 #elif TEMP_SENSOR_BED == -3
@@ -432,6 +507,9 @@
   #undef BED_MAXTEMP
 #endif
 
+#if defined(SENSOR_CHAMBER_THERMISTOR_CHANNEL) && SENSOR_CHAMBER_THERMISTOR_CHANNEL != -1
+  #define SENSOR_CHAMBER_USES_SPI_CONTROLLER
+#endif
 #if TEMP_SENSOR_CHAMBER == -4
   #define HEATER_CHAMBER_USES_AD8495
 #elif TEMP_SENSOR_CHAMBER == -3
@@ -597,7 +675,7 @@
 #endif
 
 // Is an endstop plug used for the X2 endstop?
-#define IS_X2_ENDSTOP(A,M) (ENABLED(X_DUAL_ENDSTOPS) && X2_USE_ENDSTOP == _##A##M##_)
+#define IS_X2_ENDSTOP(A, M) (ENABLED(X_DUAL_ENDSTOPS) && X2_USE_ENDSTOP == _##A##M##_)
 
 /**
  * Y_DUAL_ENDSTOPS endstop reassignment
@@ -653,7 +731,7 @@
 #endif
 
 // Is an endstop plug used for the Y2 endstop or the bed probe?
-#define IS_Y2_ENDSTOP(A,M) (ENABLED(Y_DUAL_ENDSTOPS) && Y2_USE_ENDSTOP == _##A##M##_)
+#define IS_Y2_ENDSTOP(A, M) (ENABLED(Y_DUAL_ENDSTOPS) && Y2_USE_ENDSTOP == _##A##M##_)
 
 /**
  * Z_DUAL_ENDSTOPS endstop reassignment
@@ -759,12 +837,12 @@
 #endif
 
 // Is an endstop plug used for the Z2 endstop or the bed probe?
-#define IS_Z2_OR_PROBE(A,M) ( \
+#define IS_Z2_OR_PROBE(A, M) ( \
      (Z_MULTI_ENDSTOPS && Z2_USE_ENDSTOP == _##A##M##_) \
   || (USES_Z_MIN_PROBE_ENDSTOP && Z_MIN_PROBE_PIN == A##_##M##_PIN ) )
 
 // Is an endstop plug used for the Z3 endstop or the bed probe?
-#define IS_Z3_OR_PROBE(A,M) ( \
+#define IS_Z3_OR_PROBE(A, M) ( \
      (ENABLED(Z_TRIPLE_ENDSTOPS) && Z3_USE_ENDSTOP == _##A##M##_) \
   || (USES_Z_MIN_PROBE_ENDSTOP && Z_MIN_PROBE_PIN == A##_##M##_PIN ) )
 
@@ -902,7 +980,7 @@
 
   #define STEALTHCHOP_ENABLED ANY(STEALTHCHOP_XY, STEALTHCHOP_Z, STEALTHCHOP_E)
   #define USE_SENSORLESS EITHER(SENSORLESS_HOMING, SENSORLESS_PROBING)
-  // Disable Z axis sensorless homing if a probe is used to home the Z axis
+// Disable Z axis sensorless homing if a probe is used to home the Z axis
   #if HOMING_Z_WITH_PROBE
     #undef Z_STALL_SENSITIVITY
   #endif
@@ -912,7 +990,7 @@
 #endif
 
 // Endstops and bed probe
-#define HAS_STOP_TEST(A,M) (PIN_EXISTS(A##_##M) && !IS_X2_ENDSTOP(A,M) && !IS_Y2_ENDSTOP(A,M) && !IS_Z2_OR_PROBE(A,M))
+#define HAS_STOP_TEST(A, M) (PIN_EXISTS(A##_##M) && !IS_X2_ENDSTOP(A,M) && !IS_Y2_ENDSTOP(A,M) && !IS_Z2_OR_PROBE(A,M))
 #define HAS_X_MIN HAS_STOP_TEST(X,MIN)
 #define HAS_X_MAX HAS_STOP_TEST(X,MAX)
 #define HAS_Y_MIN HAS_STOP_TEST(Y,MIN)
@@ -941,10 +1019,12 @@
 #define HAS_TEMP_ADC_BED HAS_ADC_TEST(BED)
 #define HAS_TEMP_ADC_CHAMBER HAS_ADC_TEST(CHAMBER)
 
-#define HAS_TEMP_HOTEND (HAS_TEMP_ADC_0 || ENABLED(HEATER_0_USES_MAX6675))
-#define HAS_TEMP_BED HAS_TEMP_ADC_BED
-#define HAS_TEMP_CHAMBER HAS_TEMP_ADC_CHAMBER
+#define HAS_TEMP_HOTEND (HAS_TEMP_ADC_0 || ENABLED(HEATER_0_USES_MAX6675) || defined(SENSOR_0_USES_SPI_CONTROLLER))
+#define HAS_TEMP_BED (HAS_TEMP_ADC_BED || defined(SENSOR_BED_USES_SPI_CONTROLLER))
+#define HAS_TEMP_CHAMBER (HAS_TEMP_ADC_CHAMBER || defined(SENSOR_CHAMBER_USES_SPI_CONTROLLER))
 #define HAS_HEATED_CHAMBER (HAS_TEMP_CHAMBER && PIN_EXISTS(HEATER_CHAMBER))
+
+#define USES_SPI_THERMAL_SENSORS ANY(SENSOR_0_USES_SPI_CONTROLLER,SENSOR_1_USES_SPI_CONTROLLER,SENSOR_2_USES_SPI_CONTROLLER,SENSOR_3_USES_SPI_CONTROLLER,SENSOR_4_USES_SPI_CONTROLLER,SENSOR_5_USES_SPI_CONTROLLER,SENSOR_BED_USES_SPI_CONTROLLER,SENSOR_CHAMBER_USES_SPI_CONTROLLER)
 
 // Heaters
 #define HAS_HEATER_0 (PIN_EXISTS(HEATER_0))
@@ -1025,7 +1105,7 @@
 
 #if HAS_MICROSTEPS
 
-  // MS1 MS2 MS3 Stepper Driver Microstepping mode table
+// MS1 MS2 MS3 Stepper Driver Microstepping mode table
   #ifndef MICROSTEP1
     #define MICROSTEP1 LOW,LOW,LOW
   #endif
@@ -1351,9 +1431,9 @@
 #endif
 
 #if ENABLED(DELTA)
-  /**
-   * Delta radius/rod trimmers/angle trimmers
-   */
+/**
+ * Delta radius/rod trimmers/angle trimmers
+ */
   #define _PROBE_RADIUS (DELTA_PRINTABLE_RADIUS - (MIN_PROBE_EDGE))
   #ifndef DELTA_CALIBRATION_RADIUS
     #ifdef X_PROBE_OFFSET_FROM_EXTRUDER
@@ -1375,9 +1455,9 @@
     #define DELTA_DIAGONAL_ROD_TRIM_TOWER {0, 0, 0}
   #endif
 
-  // Probing points may be verified at compile time within the radius
-  // using static_assert(HYPOT2(X2-X1,Y2-Y1)<=sq(DELTA_PRINTABLE_RADIUS),"bad probe point!")
-  // so that may be added to SanityCheck.h in the future.
+// Probing points may be verified at compile time within the radius
+// using static_assert(HYPOT2(X2-X1,Y2-Y1)<=sq(DELTA_PRINTABLE_RADIUS),"bad probe point!")
+// so that may be added to SanityCheck.h in the future.
   #define _MIN_PROBE_X (X_CENTER - (_PROBE_RADIUS))
   #define _MIN_PROBE_Y (Y_CENTER - (_PROBE_RADIUS))
   #define _MAX_PROBE_X (X_CENTER + _PROBE_RADIUS)
@@ -1394,7 +1474,7 @@
 
 #else
 
-  // Boundaries for Cartesian probing based on bed limits
+// Boundaries for Cartesian probing based on bed limits
   #define _MIN_PROBE_X (MAX(X_MIN_BED + MIN_PROBE_EDGE, X_MIN_POS + X_PROBE_OFFSET_FROM_EXTRUDER))
   #define _MIN_PROBE_Y (MAX(Y_MIN_BED + MIN_PROBE_EDGE, Y_MIN_POS + Y_PROBE_OFFSET_FROM_EXTRUDER))
   #define _MAX_PROBE_X (MIN(X_MAX_BED - (MIN_PROBE_EDGE), X_MAX_POS + X_PROBE_OFFSET_FROM_EXTRUDER))
@@ -1425,15 +1505,15 @@
  */
 #if EITHER(MESH_BED_LEVELING, AUTO_BED_LEVELING_UBL)
   #if IS_KINEMATIC
-    // Probing points may be verified at compile time within the radius
-    // using static_assert(HYPOT2(X2-X1,Y2-Y1)<=sq(DELTA_PRINTABLE_RADIUS),"bad probe point!")
-    // so that may be added to SanityCheck.h in the future.
+// Probing points may be verified at compile time within the radius
+// using static_assert(HYPOT2(X2-X1,Y2-Y1)<=sq(DELTA_PRINTABLE_RADIUS),"bad probe point!")
+// so that may be added to SanityCheck.h in the future.
     #define _MESH_MIN_X (X_MIN_BED + MESH_INSET)
     #define _MESH_MIN_Y (Y_MIN_BED + MESH_INSET)
     #define _MESH_MAX_X (X_MAX_BED - (MESH_INSET))
     #define _MESH_MAX_Y (Y_MAX_BED - (MESH_INSET))
   #else
-    // Boundaries for Cartesian probing based on set limits
+// Boundaries for Cartesian probing based on set limits
     #if ENABLED(AUTO_BED_LEVELING_UBL)
       #define _MESH_MIN_X (MAX(X_MIN_BED + MESH_INSET, X_MIN_POS))  // UBL is careful not to probe off the bed.  It does not
       #define _MESH_MIN_Y (MAX(Y_MIN_BED + MESH_INSET, Y_MIN_POS))  // need *_PROBE_OFFSET_FROM_EXTRUDER in the mesh dimensions
@@ -1447,7 +1527,7 @@
     #endif
   #endif
 
-  // These may be overridden in Configuration.h if a smaller area is desired
+// These may be overridden in Configuration.h if a smaller area is desired
   #ifndef MESH_MIN_X
     #define MESH_MIN_X _MESH_MIN_X
   #endif
@@ -1660,8 +1740,8 @@
 // because of a bug in the shared SPI implementation. (See #8122)
 #if defined(TARGET_LPC1768) && ENABLED(REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER)
   #define SDCARD_SORT_ALPHA         // Keeps one directory level in RAM. Changing
-                                    // directory levels still glitches the screen,
-                                    // but the following LCD update cleans it up.
+// directory levels still glitches the screen,
+// but the following LCD update cleans it up.
   #undef SDSORT_LIMIT
   #undef SDSORT_USES_RAM
   #undef SDSORT_USES_STACK

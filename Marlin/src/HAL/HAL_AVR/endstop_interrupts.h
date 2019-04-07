@@ -113,7 +113,6 @@ void setup_endstop_interrupts( void ) {
       pciSetup(X_MAX_PIN);                                                            // assign it
     #endif
   #endif
-
   #if HAS_X_MIN
     #if (digitalPinToInterrupt(X_MIN_PIN) != NOT_AN_INTERRUPT)
       attachInterrupt(digitalPinToInterrupt(X_MIN_PIN), endstop_ISR, CHANGE);

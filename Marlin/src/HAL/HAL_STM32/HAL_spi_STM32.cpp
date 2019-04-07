@@ -68,7 +68,6 @@ void spiBegin(void) {
   #if !PIN_EXISTS(SS)
     #error "SS_PIN not defined!"
   #endif
-
   SET_OUTPUT(SS_PIN);
   WRITE(SS_PIN, HIGH);
 }
@@ -132,6 +131,21 @@ void spiRead(uint8_t* buf, uint16_t nbyte) {
 void spiSend(uint8_t b) {
   SPI.beginTransaction(spiConfig);
   SPI.transfer(b);
+  SPI.endTransaction();
+}
+
+
+/**
+ * @brief  Sends a buffer of bytes on SPI port
+ *
+ * @param  b Buffer to send
+ * @param  n Number of bytes to send
+ *
+ * @details
+ */
+void spiSend(uint8_t* b, uint16_t n) {
+  SPI.beginTransaction(spiConfig);
+  SPI.transfer(b,n);
   SPI.endTransaction();
 }
 

@@ -454,6 +454,9 @@
   #include "pins_THE_BORG.h"          // STM32F7                                    env:STM32F7
 #elif MB(REMRAM_V1)
   #include "pins_REMRAM_V1.h"         // STM32F7                                    env:STM32F7xx
+#elif MB(UNI3D)
+  #include "Uni3D_Modular_Interface/pins_UNI3D.h"             // STM32F7                                    env:Uni3D
+
 
 //
 // Espressif ESP32

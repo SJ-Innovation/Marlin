@@ -38,4 +38,8 @@ void set_closedloop(const byte val) {
   OUT_WRITE(CLOSED_LOOP_ENABLE_PIN, val);
 }
 
+bool ClosedLoop_AllMovesComplete(){
+  return !(READ(CLOSED_LOOP_ENABLE_PIN) && !READ(CLOSED_LOOP_MOVE_COMPLETE_PIN));
+}
+
 #endif // EXTERNAL_CLOSED_LOOP_CONTROLLER

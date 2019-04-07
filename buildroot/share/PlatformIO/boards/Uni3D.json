@@ -1,0 +1,41 @@
+{
+  "build": {
+    "cpu": "cortex-m7",
+    "extra_flags": "-DSTM32F769xx",
+    "f_cpu": "216000000L",
+    "mcu": "stm32f769bit6",
+    "variant": "UNI3D_V0_1"
+  },
+  "connectivity": [
+    "can"
+  ],
+  "debug": {
+    "default_tools": [
+      "stlink"
+    ],
+    "jlink_device": "STM32F769BI",
+    "onboard_tools": [
+      "stlink"
+    ],
+    "openocd_target": "stm32f7x",
+    "svd_path": "STM32F7x9.svd"
+  },
+  "frameworks": [
+    "arduino",
+    "stm32cube"
+  ],
+  "name": "Sams 3D Printer Controller",
+  "upload": {
+    "maximum_ram_size": 524288,
+    "maximum_size": 2097152,
+    "protocol": "stlink",
+    "protocols": [
+      "jlink",
+      "stlink",
+      "blackmagic",
+      "serial"
+    ]
+  },
+  "url": "https://github.com/SJ-Innovation",
+  "vendor": "SJI"
+}

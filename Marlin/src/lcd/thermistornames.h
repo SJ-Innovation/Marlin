@@ -36,6 +36,8 @@
   #define THERMISTOR_NAME "User Parameters"
 
 // Thermcouples
+#if THERMISTOR_ID <= -10 && THERMISTOR_ID >= -19
+  #define THERMISTOR_NAME "SPI_TSENSE"
 #elif THERMISTOR_ID == -4
   #define THERMISTOR_NAME "AD8495"
 #elif THERMISTOR_ID == -3

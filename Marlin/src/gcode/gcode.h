@@ -453,7 +453,7 @@ private:
     static void M5();
   #endif
 
-  #if ENABLED(EXTERNAL_CLOSED_LOOP_CONTROLLER)
+  #if HAS_CLOSEDLOOP
     static void M12();
   #endif
 

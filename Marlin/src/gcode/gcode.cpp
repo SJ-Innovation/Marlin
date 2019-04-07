@@ -331,7 +331,7 @@ void GcodeSuite::process_parsed_command(
         case 5: M5(); break;                                      // M5 - turn spindle/laser off
       #endif
 
-      #if ENABLED(EXTERNAL_CLOSED_LOOP_CONTROLLER)
+      #if HAS_CLOSEDLOOP
         case 12: M12(); break;                                    // M12: Synchronize and optionally force a CLC set
       #endif
 

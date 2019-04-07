@@ -21,5 +21,15 @@
  */
 #pragma once
 
-void init_closedloop();
-void set_closedloop(const byte val);
+#if HAS_CLOSEDLOOP
+  void init_closedloop();
+  bool ClosedLoop_AllMovesComplete();
+  #if ENABLED(EXTERNAL_CLOSED_LOOP_CONTROLLER)
+    void set_closedloop(const byte val);
+  #endif
+
+  #if USES_SPI_CLOSEDLOOP
+    #include "Uni3D_Modular_Peripherals/spi_closedloop_controller.h"
+  #endif
+
+#endif

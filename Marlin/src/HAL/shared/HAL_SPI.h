@@ -27,9 +27,9 @@
  */
 
 #include <stdint.h>
-
+#include "../../core/millis_t.h"
 /**
- * SPI speed where 0 <= index <= 6
+* SPI speed where 0 <= index <= 6
  *
  * Approximate rates :
  *
@@ -68,6 +68,8 @@ void spiBegin(void);
 void spiInit(uint8_t spiRate);
 /** Write single byte to SPI */
 void spiSend(uint8_t b);
+/** Write a buffer of bytes to SPI */
+void spiSend(uint8_t* b, uint16_t n);
 /** Read single byte from SPI */
 uint8_t spiRec(void);
 /** Read from SPI into buffer */
@@ -76,3 +78,7 @@ void spiRead(uint8_t* buf, uint16_t nbyte);
 void spiSendBlock(uint8_t token, const uint8_t* buf);
 /** Begin SPI transaction, set clock, bit order, data mode */
 void spiBeginTransaction(uint32_t spiClock, uint8_t bitOrder, uint8_t dataMode);
+
+/** Wait until the slave has processed its command and is ready to reply */
+void spiHardWaitForSlave(int32_t triggerPin, bool toGoToState, millis_t timeout);
+uint8_t spiRecWaitForSlave(uint8_t waitWhileByte, millis_t timeout);

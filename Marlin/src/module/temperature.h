@@ -88,11 +88,11 @@ enum ADCSensorState : char {
     PrepareTemp_0,
     MeasureTemp_0,
   #endif
-  #if HAS_HEATED_BED
+  #if HAS_TEMP_ADC_BED
     PrepareTemp_BED,
     MeasureTemp_BED,
   #endif
-  #if HAS_TEMP_CHAMBER
+  #if HAS_TEMP_ADC_CHAMBER
     PrepareTemp_CHAMBER,
     MeasureTemp_CHAMBER,
   #endif

@@ -72,6 +72,10 @@
 
 #include "../Marlin.h"
 
+#if HAS_CLOSEDLOOP
+  #include "../feature/closedloop.h"
+#endif
+
 #if HAS_LEVELING
   #include "../feature/bedlevel/bedlevel.h"
 #endif
@@ -1558,8 +1562,8 @@ float Planner::get_axis_position_mm(const AxisEnum axis) {
 void Planner::synchronize() {
   while (
     has_blocks_queued() || cleaning_buffer_counter
-    #if ENABLED(EXTERNAL_CLOSED_LOOP_CONTROLLER)
-      || (READ(CLOSED_LOOP_ENABLE_PIN) && !READ(CLOSED_LOOP_MOVE_COMPLETE_PIN))
+    #if HAS_CLOSEDLOOP
+      || !ClosedLoop_AllMovesComplete()
     #endif
   ) idle();
 }

@@ -722,6 +722,10 @@ void idle(
   #if ENABLED(PRUSA_MMU2)
     mmu2.mmu_loop();
   #endif
+
+  #if ENABLED(UNI3D_MODULAR_INTERFACE)
+    void CheckUniconHealth();
+  #endif
 }
 
 /**
@@ -1100,7 +1104,7 @@ void setup() {
     watchdog_init();          // Reinit watchdog after HAL_get_reset_source call
   #endif
 
-  #if ENABLED(EXTERNAL_CLOSED_LOOP_CONTROLLER)
+  #if HAS_CLOSEDLOOP
     init_closedloop();
   #endif
 
