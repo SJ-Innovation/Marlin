@@ -29,32 +29,35 @@
 #include "../../module/thermistor/thermistors.h"
 #include "spi_thermal_sensors.h"
 
-uint16_t spi_thermal_sensor_raw[0
-                                #if ENABLED(SENSOR_0_USES_SPI_CONTROLLER)
-                                + 1
-                                #endif
-                                #if ENABLED(SENSOR_1_USES_SPI_CONTROLLER)
-                                + 1
-                                #endif
-                                #if ENABLED(SENSOR_2_USES_SPI_CONTROLLER)
-                                + 1
-                                #endif
-                                #if ENABLED(SENSOR_3_USES_SPI_CONTROLLER)
-                                + 1
-                                #endif
-                                #if ENABLED(SENSOR_4_USES_SPI_CONTROLLER)
-                                + 1
-                                #endif
-                                #if ENABLED(SENSOR_5_USES_SPI_CONTROLLER)
-                                + 1
-                                #endif
-                                #if ENABLED(SENSOR_BED_USES_SPI_CONTROLLER)
-                                + 1
-#endif
+
+const uint8_t NUM_SPI_SENSORS_USED = 0
+  #if ENABLED(SENSOR_0_USES_SPI_CONTROLLER)
++ 1
+  #endif
+  #if ENABLED(SENSOR_1_USES_SPI_CONTROLLER)
++ 1
+  #endif
+  #if ENABLED(SENSOR_2_USES_SPI_CONTROLLER)
++ 1
+  #endif
+  #if ENABLED(SENSOR_3_USES_SPI_CONTROLLER)
++ 1
+  #endif
+  #if ENABLED(SENSOR_4_USES_SPI_CONTROLLER)
++ 1
+  #endif
+  #if ENABLED(SENSOR_5_USES_SPI_CONTROLLER)
++ 1
+  #endif
+  #if ENABLED(SENSOR_BED_USES_SPI_CONTROLLER)
++ 1
+  #endif
 #if ENABLED(SENSOR_CHAMBER_USES_SPI_CONTROLLER)
-  +1
++1
 #endif
-];
+;
+
+uint16_t spi_thermal_sensor_raw[NUM_SPI_SENSORS_USED];
 
 enum class CL_COMMANDS {
   GET_ALL
