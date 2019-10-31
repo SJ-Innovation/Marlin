@@ -45,6 +45,7 @@
  *         7 | 11
  */
 
+// IOX Spare - 11 19 20 21 (8 CHANNELS TOTAL)
 #ifdef TARGET_LPC1768
   #error "Oops! Set MOTHERBOARD to an LPC1768-based board when building for LPC1768."
 #elif defined(__STM32F1__)
@@ -79,96 +80,115 @@
   #define SERVO2_PIN                           5
 #endif
 #ifndef SERVO3_PIN
-  #define SERVO3_PIN                           4
+#define SERVO3_PIN        4
 #endif
 
 //
 // Limit Switches
 //
-#ifndef X_STOP_PIN
-  #ifndef X_MIN_PIN
-    #define X_MIN_PIN                          3
-  #endif
-  #ifndef X_MAX_PIN
-    #define X_MAX_PIN                          2
-  #endif
-#endif
-#ifndef Y_STOP_PIN
-  #ifndef Y_MIN_PIN
-    #define Y_MIN_PIN                         14
-  #endif
-  #ifndef Y_MAX_PIN
-    #define Y_MAX_PIN                         15
-  #endif
-#endif
-#ifndef Z_STOP_PIN
-  #ifndef Z_MIN_PIN
-    #define Z_MIN_PIN                         18
-  #endif
-  #ifndef Z_MAX_PIN
-    #define Z_MAX_PIN                         19
-  #endif
-#endif
+#define X_MIN_PIN           3
+#define Y_MIN_PIN          2
+#define Z_MIN_PIN          14
+#define CLOSED_LOOP_ENABLE_PIN 15
+#define CLOSED_LOOP_MOVE_COMPLETE_PIN 11
+
+#define CALIBRATION_PIN 57
+#define CALIBRATION_PIN_INVERTING true // set to true to invert the pin
+//#define CALIBRATION_PIN_PULLDOWN
+#define CALIBRATION_PIN_PULLUP
 
 //
 // Z Probe (when not Z_MIN_PIN)
 //
 #ifndef Z_MIN_PROBE_PIN
-  #define Z_MIN_PROBE_PIN                     32
+#define Z_MIN_PROBE_PIN  32
 #endif
 
 //
 // Steppers
 //
-#define X_STEP_PIN                            54
-#define X_DIR_PIN                             55
-#define X_ENABLE_PIN                          38
-#ifndef X_CS_PIN
-  #define X_CS_PIN                            53
-#endif
+#define X_STEP_PIN         54
+#define X_DIR_PIN          55
+#define X_ENABLE_PIN       38
+#define X_CS_PIN           63//53
 
-#define Y_STEP_PIN                            60
-#define Y_DIR_PIN                             61
-#define Y_ENABLE_PIN                          56
-#ifndef Y_CS_PIN
-  #define Y_CS_PIN                            49
-#endif
+#define Y_STEP_PIN         60
+#define Y_DIR_PIN          61
+#define Y_ENABLE_PIN       56
+#define Y_CS_PIN           40//49
 
-#ifndef Z_STEP_PIN
-  #define Z_STEP_PIN                          46
-#endif
-#define Z_DIR_PIN                             48
-#define Z_ENABLE_PIN                          62
-#ifndef Z_CS_PIN
-  #define Z_CS_PIN                            40
-#endif
+#define Z_STEP_PIN         46
+#define Z_DIR_PIN          48
+#define Z_ENABLE_PIN       62
+#define Z_CS_PIN           42//40
 
-#define E0_STEP_PIN                           26
-#define E0_DIR_PIN                            28
-#define E0_ENABLE_PIN                         24
-#ifndef E0_CS_PIN
-  #define E0_CS_PIN                           42
-#endif
+#define E0_STEP_PIN        26
+#define E0_DIR_PIN         28
+#define E0_ENABLE_PIN      24
+#define E0_CS_PIN          65
 
-#define E1_STEP_PIN                           36
-#define E1_DIR_PIN                            34
-#define E1_ENABLE_PIN                         30
-#ifndef E1_CS_PIN
-  #define E1_CS_PIN                           44
+#define E1_STEP_PIN        36
+#define E1_DIR_PIN         34
+#define E1_ENABLE_PIN      30
+#define E1_CS_PIN          44
+
+
+#if ENABLED(HAVE_TMC2208)
+/**
+ * TMC2208 stepper drivers
+ *
+ * Hardware serial communication ports.
+ * If undefined software serial is used according to the pins below
+ */
+//#define X_HARDWARE_SERIAL  Serial1
+//#define X2_HARDWARE_SERIAL Serial1
+//#define Y_HARDWARE_SERIAL  Serial1
+//#define Y2_HARDWARE_SERIAL Serial1
+//#define Z_HARDWARE_SERIAL  Serial1
+//#define Z2_HARDWARE_SERIAL Serial1
+//#define E0_HARDWARE_SERIAL Serial1
+//#define E1_HARDWARE_SERIAL Serial1
+//#define E2_HARDWARE_SERIAL Serial1
+//#define E3_HARDWARE_SERIAL Serial1
+//#define E3_HARDWARE_SERIAL Serial1
+
+/**
+ * Software serial
+ */
+
+#define X_SERIAL_TX_PIN    59
+#define X_SERIAL_RX_PIN    63
+#define X2_SERIAL_TX_PIN   -1
+#define X2_SERIAL_RX_PIN   -1
+
+#define Y_SERIAL_TX_PIN    64
+#define Y_SERIAL_RX_PIN    40
+#define Y2_SERIAL_TX_PIN   -1
+#define Y2_SERIAL_RX_PIN   -1
+
+#define Z_SERIAL_TX_PIN    44
+#define Z_SERIAL_RX_PIN    42
+#define Z2_SERIAL_TX_PIN   -1
+#define Z2_SERIAL_RX_PIN   -1
+
+#define E0_SERIAL_TX_PIN   66
+#define E0_SERIAL_RX_PIN   65
+#define E1_SERIAL_TX_PIN   -1
+#define E1_SERIAL_RX_PIN   -1
+#define E2_SERIAL_TX_PIN   -1
+#define E2_SERIAL_RX_PIN   -1
+#define E3_SERIAL_TX_PIN   -1
+#define E3_SERIAL_RX_PIN   -1
+#define E4_SERIAL_TX_PIN   -1
+#define E4_SERIAL_RX_PIN   -1
 #endif
 
 //
 // Temperature Sensors
 //
-#ifndef TEMP_0_PIN
-  #define TEMP_0_PIN                          13  // Analog Input
-#endif
-#ifndef TEMP_1_PIN
-  #define TEMP_1_PIN                          15  // Analog Input
-#endif
-#ifndef TEMP_BED_PIN
-  #define TEMP_BED_PIN                        14  // Analog Input
-#endif
+#define TEMP_0_PIN         15  // Analog Input
+#define TEMP_1_PIN         13   // Analog Input
+#define TEMP_BED_PIN       14   // Analog Input
 
 //
 // SPI for Max6675 or Max31855 Thermocouple
@@ -197,37 +217,57 @@
 //
 // Heaters / Fans
 //
+
+
+
 #ifndef MOSFET_D_PIN
-  #define MOSFET_D_PIN                        -1
+#define MOSFET_D_PIN  -1
 #endif
 #ifndef RAMPS_D8_PIN
-  #define RAMPS_D8_PIN                         8
+#define RAMPS_D8_PIN   8
 #endif
 #ifndef RAMPS_D9_PIN
-  #define RAMPS_D9_PIN                         9
+#define RAMPS_D9_PIN   9
 #endif
 #ifndef RAMPS_D10_PIN
-  #define RAMPS_D10_PIN                       10
+#define RAMPS_D10_PIN 10
 #endif
 
-#define HEATER_0_PIN               RAMPS_D10_PIN
+#define HEATER_0_PIN     4
+#define HEATER_1_PIN     5
+#define HEATER_BED_PIN   6
+#define CONTROLLER_FAN_PIN RAMPS_D10_PIN  // Set a custom pin for the controller fan
+#define FAN_PIN        21 // IO EXPANDER AUX2
+#define FAN1_PIN        59 // IO EXPANDER AUX2
 
-#if ENABLED(IS_RAMPS_EFB)                         // Hotend, Fan, Bed
-  #define HEATER_BED_PIN            RAMPS_D8_PIN
-#elif ENABLED(IS_RAMPS_EEF)                       // Hotend, Hotend, Fan
-  #define HEATER_1_PIN              RAMPS_D9_PIN
-#elif ENABLED(IS_RAMPS_EEB)                       // Hotend, Hotend, Bed
-  #define HEATER_1_PIN              RAMPS_D9_PIN
-  #define HEATER_BED_PIN            RAMPS_D8_PIN
-#elif ENABLED(IS_RAMPS_EFF)                       // Hotend, Fan, Fan
-  #define FAN1_PIN                  RAMPS_D8_PIN
-#elif DISABLED(IS_RAMPS_SF)                       // Not Spindle, Fan (i.e., "EFBF" or "EFBE")
-  #define HEATER_BED_PIN            RAMPS_D8_PIN
-  #if HOTENDS == 1
-    #define FAN1_PIN                MOSFET_D_PIN
-  #else
-    #define HEATER_1_PIN            MOSFET_D_PIN
-  #endif
+#define E0_AUTO_FAN_PIN 20 // IO EXPANDER AUX1
+#define E1_AUTO_FAN_PIN  64 // IO EXPANDER AUX1
+#define SOL0_PIN 18 // IO EXPANDER ESTOPS
+#define SOL1_PIN 19 // IO EXPANDER ESTOPS
+//#define FAN_PIN RAMPS_D8_PIN
+//#define E0_AUTO_FAN_PIN RAMPS_D9_PIN
+//#define E1_AUTO_FAN_PIN -1
+
+#if ENABLED(IS_RAMPS_EFB)                      // Hotend, Fan, Bed
+#elif ENABLED(IS_RAMPS_EEF)                    // Hotend, Hotend, Fan
+#define HEATER_1_PIN   RAMPS_D9_PIN
+#define FAN_PIN        RAMPS_D8_PIN
+#elif ENABLED(IS_RAMPS_EEB)                    // Hotend, Hotend, Bed
+#define HEATER_1_PIN   RAMPS_D9_PIN
+#define HEATER_BED_PIN RAMPS_D8_PIN
+#elif ENABLED(IS_RAMPS_EFF)                    // Hotend, Fan, Fan
+#define FAN_PIN        RAMPS_D9_PIN
+#define FAN1_PIN       RAMPS_D8_PIN
+#elif ENABLED(IS_RAMPS_SF)                     // Spindle, Fan
+#define FAN_PIN        RAMPS_D8_PIN
+#else                                          // Non-specific are "EFB" (i.e., "EFBF" or "EFBE")
+#define FAN_PIN        RAMPS_D9_PIN
+#define HEATER_BED_PIN RAMPS_D8_PIN
+#if HOTENDS == 1
+#define FAN1_PIN     MOSFET_D_PIN
+#else
+#define HEATER_1_PIN MOSFET_D_PIN
+#endif
 #endif
 
 #ifndef FAN_PIN
@@ -240,6 +280,7 @@
   #else                                           // Non-specific are "EFB" (i.e., "EFBF" or "EFBE")
     #define FAN_PIN                 RAMPS_D9_PIN
   #endif
+#define FAN_PIN 4      // IO pin. Buffer needed
 #endif
 
 //
