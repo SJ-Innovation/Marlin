@@ -114,7 +114,7 @@ bool HAL_timer_interrupt_enabled(const uint8_t timer_num) {
     case 0:
       return NVIC_IS_ENABLED(IRQ_PIT) && (PIT_TCTRL1 & PIT_TCTRL_TIE);
     case 1:
-      return NVIC_IS_ENABLED(IRQ_PIT) && (PIT_TCTRL1 & PIT_TCTRL_TIE);
+      return NVIC_IS_ENABLED(IRQ_PIT) && (PIT_TCTRL3 & PIT_TCTRL_TIE);
   }
   return false;
 }
