@@ -418,6 +418,8 @@ private:
 
   TERN_(DIRECT_STEPPING, static void G6());
 
+  TERN_(AUTO_NOZZLE_Z_OFFSET_CAL, static void G8());
+
   #if ENABLED(FWRETRACT)
     static void G10();
     static void G11();

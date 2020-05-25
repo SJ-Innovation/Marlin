@@ -3132,6 +3132,24 @@ static_assert(   _ARR_TEST(3,0) && _ARR_TEST(3,1) && _ARR_TEST(3,2)
 #endif
 
 /**
+ * Sanity check for Z offset calibration
+ */
+#if ENABLED(AUTO_NOZZLE_Z_OFFSET_CAL)
+  #if EXTRUDERS < 2
+    #error "AUTO_NOZZLE_Z_OFFSET_CAL required at least 2 extruders."
+  #endif
+  #if X_PROBE_OFFSET_FROM_EXTRUDER !=0 || Y_PROBE_OFFSET_FROM_EXTRUDER!=0
+    #error "Both X_PROBE_OFFSET_FROM_EXTRUDER and Y_PROBE_OFFSET_FROM_EXTRUDER must be 0 with AUTO_NOZZLE_Z_OFFSET_CAL."
+  #endif
+  #if DISABLED(Z_SAFE_HOMING)
+    #error "AUTO_NOZZLE_Z_OFFSET_CAL requires Z_SAFE_HOMING"
+  #endif
+  #if DISABLED(FIX_MOUNTED_PROBE)
+    #error "AUTO_NOZZLE_Z_OFFSET_CAL requires FIX_MOUNTED_PROBE as probing done directly by nozzle"
+  #endif
+#endif
+
+/**
  * Sanity check for WIFI
  */
 #if EITHER(ESP3D_WIFISUPPORT, WIFISUPPORT) && DISABLED(ARDUINO_ARCH_ESP32)
