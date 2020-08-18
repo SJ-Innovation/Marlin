@@ -987,10 +987,12 @@
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
-#define PROBING_MARGIN 10
+//#define PROBING_MARGIN 10
 // Certain types of probes need to stay away from edges
-//#define MIN_PROBE_EDGE_X 30
-//#define MIN_PROBE_EDGE_Y 20
+#define PROBING_MARGIN_LEFT 30
+#define PROBING_MARGIN_RIGHT 30
+#define PROBING_MARGIN_UP 20
+#define PROBING_MARGIN_DOWN 20
 
 // X and Y axis travel speed (mm/min) between probes
 #define XY_PROBE_SPEED 5000
@@ -1029,6 +1031,7 @@
  */
 #define Z_CLEARANCE_DEPLOY_PROBE   5 // Z Clearance for Deploy/Stow
 #define Z_CLEARANCE_BETWEEN_PROBES  2 // Z Clearance between probe points
+#define Z_CLEARANCE_MULTI_PROBE     5 // Z Clearance between multiple probes
 #define Z_AFTER_PROBING           2 // Z position after probing is done
 
 #define Z_PROBE_LOW_POINT          -2 // Farthest distance below the trigger-point to go before stopping
@@ -1282,10 +1285,6 @@
   // Set the number of grid points per dimension.
   #define GRID_MAX_POINTS_X 4
   #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
-  #define MIN_PROBE_EDGE_LEFT 10
-  #define MIN_PROBE_EDGE_RIGHT 25
-  #define MIN_PROBE_EDGE_FRONT 10
-  #define MIN_PROBE_EDGE_BACK 10
   // Probe along the Y axis, advancing X after each column
   //#define PROBE_Y_FIRST
 
@@ -1293,7 +1292,7 @@
 
     // Beyond the probed grid, continue the implied tilt?
     // Default is to maintain the height of the nearest edge.
-#define EXTRAPOLATE_BEYOND_GRID
+    #define EXTRAPOLATE_BEYOND_GRID
 
     //
     // Experimental Subdivision of the grid by Catmull-Rom method.
